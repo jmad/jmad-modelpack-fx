@@ -1,0 +1,92 @@
+[INFO] - Using 4 worker leases.
+[QUIET] - CBNG configuration:
+[QUIET] - -------------------
+[QUIET] - CBNG Version:       1.5.5
+[QUIET] - CBNG Core Version:  1.12.19
+[QUIET] - Artifactory URL:    http://artifactory.cern.ch
+[QUIET] - gradleConfigDir:    /local/kfuchsbe/TE-MPE-Neon/binary/binary.contents.7075-BCh-3115.winlinuxmac_1.5.5/commonbuild-ng-binaries/gradle/cbng-config
+[QUIET] - gradle Version:     3.5
+[QUIET] - -------------------
+[QUIET] - User of execution:  kfuchsbe
+[QUIET] - Working directory:  /afs/cern.ch/user/k/kfuchsbe
+[QUIET] - Project directory:  /local/kfuchsbe/te-mpe-eclipse-workspace/jmad-modelpack-gui
+[QUIET] - Host of execution:  cwe-513-vol209.cern.ch
+[QUIET] - Start of execution: Wed May 09 23:55:50 CEST 2018
+[QUIET] - Build ID:           180509-214736@29361@cwe-513-vol209.cern.ch@EA577E32
+[QUIET] - Project build ID:   180509-214736@29361@cwe-513-vol209.cern.ch@E9A30F3E
+[QUIET] - -------------------
+[INFO] - Loaded 9 local properties from project.properties file
+[INFO] - This is NOT a release server
+[INFO] - Creating new cache for fileHashes, path /local/kfuchsbe/te-mpe-eclipse-workspace/jmad-modelpack-gui/.gradle/3.5/taskHistory/fileHashes.bin, access org.gradle.cache.internal.DefaultCacheAccess@4461f734
+[INFO] - === Configuring CBNG project...
+[INFO] - Indexed GAVC Search enabled: true
+[QUIET] - CBNG project (/local/kfuchsbe/te-mpe-eclipse-workspace/jmad-modelpack-gui/product.xml)
+[INFO] - Detected CB source set layout
+[INFO] - Cached resource http://artifactory.cern.ch/development/cern/devops/artifact-checker/artifact-checker-configuration/1.0.0-SNAPSHOT/artifact-checker-configuration-1.0.0-20180430.124030-30.pom is up-to-date (lastModified: Mon Apr 30 14:41:49 CEST 2018).
+[INFO] - Cached resource http://artifactory.cern.ch/development/cern/devops/artifact-checker/artifact-checker-configuration/1.0.0-SNAPSHOT/artifact-checker-configuration-1.0.0-20180430.124030-30.jar is up-to-date (lastModified: Mon Apr 30 14:40:30 CEST 2018).
+[INFO] - Evaluating root project 'jmad-modelpackage-gui' using build file '/local/kfuchsbe/te-mpe-eclipse-workspace/jmad-modelpack-gui/build.gradle'.
+[INFO] - === Properties:
+[INFO] - cacheMaxAgeInHours = 24.0
+[INFO] - targetRepo = 'beco-autobuilds-local'
+[INFO] - artifactoryUrl = 'http://artifactory.cern.ch'
+[INFO] - simulateRelease = false
+[INFO] - multiProductDetector.enabled = true
+[INFO] - eclipseLocalOverride = true
+[INFO] - maxParallelForks = 2
+[INFO] - coverage.plugin = 'jacoco'
+[INFO] - avoidDefaultJar = false
+[INFO] - javadoc.enabled = false
+[INFO] - resolveEmptyAs = 'CTX'
+[INFO] - svnUrl = <null>
+[INFO] - targetCompatibility = 1.8
+[INFO] - fesajapcgen.enabled = false
+[INFO] - resolveConflicts.enabled = true
+[INFO] - release.resolvealias = true
+[INFO] - java2html.enabled = false
+[INFO] - junit.enabled = true
+[INFO] - sourceCompatibility = 1.8
+[INFO] - jnlp.enabled = true
+[INFO] - forkEvery = 1
+[INFO] - logTimestamps = false
+[INFO] - logSummary.enabled = true
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui)
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui, configuration: apiElements)
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui, configuration: archives)
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui, configuration: compile)
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui, configuration: compileClasspath)
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui, configuration: compileOnly)
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui, configuration: default)
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui, configuration: fesajapccodegen)
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui, configuration: implementation)
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui, configuration: jacocoAgent)
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui, configuration: jacocoAnt)
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui, configuration: runtime)
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui, configuration: runtimeClasspath)
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui, configuration: runtimeElements)
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui, configuration: runtimeOnly)
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui, configuration: tattleTale)
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui, configuration: testCompile)
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui, configuration: testCompileClasspath)
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui, configuration: testCompileOnly)
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui, configuration: testImplementation)
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui, configuration: testRuntime)
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui, configuration: testRuntimeClasspath)
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui, configuration: testRuntimeOnly)
+[INFO] - STOPWATCH | dependencies.gradle:afterEvaluate | START
+[QUIET] - Cache state: UP_TO_DATE
+[QUIET] - Loading dependencies from cache
+[INFO] - Dependencies are loaded.
+[INFO] - Applying dependency substitution rules for relocations (project: jmad-modelpackage-gui, configuration: jmad-modelpackage-gui)
+[INFO] - SVN info is not available for jmad-modelpackage-gui
+[INFO] - === Configured CBNG project
+[INFO] - STOPWATCH | dependencies.gradle:afterEvaluate | 0.82
+[QUIET] - No jnlp applications found
+[INFO] - All projects evaluated.
+
+CONFIGURE SUCCESSFUL
+
+Total time: 1.75 secs
+[INFO] - classpath.entries: 0
+
+BUILD SUCCESSFUL
+
