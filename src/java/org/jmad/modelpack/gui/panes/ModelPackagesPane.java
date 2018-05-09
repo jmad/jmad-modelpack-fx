@@ -13,12 +13,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.jmad.modpack.domain.ModelPackage;
-import org.jmad.modpack.domain.ModelPackageVariant;
-import org.jmad.modpack.domain.Variant;
-import org.jmad.modpack.service.JMadModelPackageService;
-import org.jmad.modpack.service.gitlab.domain.Release;
-import org.jmad.modpack.service.gitlab.domain.Tag;
+import org.jmad.modelpack.domain.ModelPackage;
+import org.jmad.modelpack.domain.ModelPackageVariant;
+import org.jmad.modelpack.domain.Variant;
+import org.jmad.modelpack.service.JMadModelPackageService;
+import org.jmad.modelpack.service.gitlab.domain.Release;
+import org.jmad.modelpack.service.gitlab.domain.Tag;
 
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.TreeMultimap;

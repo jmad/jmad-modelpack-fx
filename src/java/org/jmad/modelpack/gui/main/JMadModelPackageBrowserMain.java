@@ -6,9 +6,9 @@ package org.jmad.modelpack.gui.main;
 
 import org.jmad.modelpack.gui.panes.ModelPackagesPane;
 import org.jmad.modelpack.gui.panes.ModelRepositoryPane;
-import org.jmad.modpack.service.JMadModelPackageService;
-import org.jmad.modpack.service.ModelPackageRepositoryManager;
-import org.jmad.modpack.service.conf.JMadModelPackageServiceConfiguration;
+import org.jmad.modelpack.service.JMadModelPackageService;
+import org.jmad.modelpack.service.ModelPackageRepositoryManager;
+import org.jmad.modelpack.service.conf.JMadModelPackageServiceConfiguration;
 import org.minifx.workbench.MiniFx;
 import org.minifx.workbench.annotations.Name;
 import org.minifx.workbench.annotations.View;

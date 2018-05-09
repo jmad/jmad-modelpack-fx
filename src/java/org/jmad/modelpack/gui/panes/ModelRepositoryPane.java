@@ -10,9 +10,9 @@ import static java.util.stream.Collectors.toList;
 import java.util.List;
 import java.util.Map;
 
-import org.jmad.modpack.domain.ModelPackageRepository;
-import org.jmad.modpack.service.ModelPackageRepositoryManager;
-import org.jmad.modpack.service.ModelPackageRepositoryManager.EnableState;
+import org.jmad.modelpack.domain.ModelPackageRepository;
+import org.jmad.modelpack.service.ModelPackageRepositoryManager;
+import org.jmad.modelpack.service.ModelPackageRepositoryManager.EnableState;
 
 import com.google.common.collect.ImmutableList;
 
