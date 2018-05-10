@@ -11,20 +11,21 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.jmad.modelpack.domain.ModelPackage;
 import org.jmad.modelpack.domain.ModelPackageVariant;
+import org.jmad.modelpack.domain.ModelPackages;
 import org.jmad.modelpack.domain.Variant;
 import org.jmad.modelpack.service.JMadModelPackageService;
-import org.jmad.modelpack.service.gitlab.domain.Release;
-import org.jmad.modelpack.service.gitlab.domain.Tag;
 
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.TreeMultimap;
 
 import freetimelabs.io.reactorfx.flux.FxFlux;
 import freetimelabs.io.reactorfx.schedulers.FxSchedulers;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.Button;
@@ -36,42 +37,56 @@ import javafx.scene.layout.BorderPane;
 public class ModelPackagesPane extends BorderPane {
 
     private final JMadModelPackageService packageService;
+    private final PackageFilterModel filterModel = new PackageFilterModel();
     private Button refreshButton;
     private TreeItem<PackageLine> root = new TreeItem<>(new PackageLine());
 
     private SetMultimap<ModelPackage, ModelPackageVariant> map = TreeMultimap
-            .create(Comparator.comparing(ModelPackage::name), newComparator());
+            .create(Comparator.comparing(ModelPackage::name), ModelPackages.packageVariantComparator());
 
-    public ModelPackagesPane(JMadModelPackageService packageService) {
+    public ModelPackagesPane(JMadModelPackageService packageService, PackageSelectionModel selectionModel) {
         this.packageService = requireNonNull(packageService, "packageService must not be null");
 
         TreeTableColumn<PackageLine, String> packageColumn = new TreeTableColumn<>("package");
-        packageColumn.setPrefWidth(300);
+        packageColumn.setPrefWidth(250);
         packageColumn.setCellValueFactory(param -> param.getValue().getValue().packageNameProperty());
 
         TreeTableColumn<PackageLine, String> variantColumn = new TreeTableColumn<>("variant");
-        variantColumn.setPrefWidth(300);
+        variantColumn.setPrefWidth(200);
         variantColumn.setCellValueFactory(param -> param.getValue().getValue().variantProperty());
 
         TreeTableView<PackageLine> treeTableView = new TreeTableView<>(root);
         treeTableView.setShowRoot(false);
         treeTableView.getColumns().setAll(packageColumn, variantColumn);
 
+        selectionModel.selectedPackageProperty().bind(Bindings.createObjectBinding(() -> {
+            TreeItem<PackageLine> treeItem = treeTableView.getSelectionModel().selectedItemProperty().get();
+            if (treeItem == null) {
+                return null;
+            }
+            return treeItem.getValue().modelPackageVariant;
+        }, treeTableView.getSelectionModel().selectedItemProperty()));
+
         setCenter(treeTableView);
+        setLeft(new PackageFilterPane(filterModel));
 
         refreshButton = new Button("refresh");
         setBottom(refreshButton);
 
-        refresh();
+        update();
 
         // @formatter:off
         FxFlux.from(refreshButton)
                 .subscribeOn(FxSchedulers.fxThread())
-                .subscribe(o -> this.refresh());
+                .subscribe(o -> this.update());
         // @formatter:on
+
+        this.filterModel.predicateProperty().addListener((p, oldVal, newVal) -> {
+            refresh();
+        });
     }
 
-    private void refresh() {
+    private void update() {
         // this.refreshButton.setDisable(true);
         this.clear();
         // @formatter:off
@@ -83,17 +98,23 @@ public class ModelPackagesPane extends BorderPane {
 
     private void add(ModelPackageVariant line) {
         this.map.put(line.modelPackage(), line);
-        List<TreeItem<PackageLine>> treeItems = treeItemsFor(this.map);
+        refresh();
+    }
+
+    private void refresh() {
+        List<TreeItem<PackageLine>> treeItems = treeItemsFor(this.map, filterModel.predicateProperty().get());
         this.root.getChildren().setAll(treeItems);
     }
 
-    private List<TreeItem<PackageLine>> treeItemsFor(SetMultimap<ModelPackage, ModelPackageVariant> map2) {
+    private List<TreeItem<PackageLine>> treeItemsFor(SetMultimap<ModelPackage, ModelPackageVariant> map2,
+            Predicate<ModelPackageVariant> filter) {
         // @formatter:off
         return map2.keySet().stream().map(k -> {
             Set<ModelPackageVariant> packages = map2.get(k);
-            List<PackageLine> itemsForPackage = packages.stream().map(PackageLine::new).collect(Collectors.toList());
+            List<PackageLine> itemsForPackage = packages.stream().filter(filter).map(PackageLine::new).collect(Collectors.toList());
             return itemsForPackage;
-        }).map(l -> {
+        }).filter(l -> !l.isEmpty())
+          .map(l -> {
             TreeItem<PackageLine> toItem = new TreeItem<>(l.get(0));
             List<TreeItem<PackageLine>> children = l.subList(1, l.size()).stream().map(TreeItem::new).collect(toList());
             toItem.getChildren().setAll(children);
@@ -137,33 +158,6 @@ public class ModelPackagesPane extends BorderPane {
             return this.variant;
         }
 
-    }
-
-    private static Comparator<ModelPackageVariant> newComparator() {
-        return Comparator.<ModelPackageVariant, String> comparing(ti -> ti.modelPackage().name())
-                .thenComparing(ti -> ti.variant(), variantComparator());
-    }
-
-    /*
-     * TODO to be fixed!!!
-     */
-    private static Comparator<Variant> variantComparator() {
-        return Comparator.<Variant, Class<?>> comparing(v -> v.getClass(), (c1, c2) -> {
-            if (c1.isAssignableFrom(Release.class) && !c2.isAssignableFrom(Release.class)) {
-                return -1;
-            }
-            if (c2.isAssignableFrom(Release.class) && !c1.isAssignableFrom(Release.class)) {
-                return 1;
-            }
-
-            if (c1.isAssignableFrom(Tag.class) && !c2.isAssignableFrom(Tag.class)) {
-                return -1;
-            }
-            if (c2.isAssignableFrom(Tag.class) && !c1.isAssignableFrom(Tag.class)) {
-                return 1;
-            }
-            return 0;
-        }).thenComparing(Comparator.comparing(Variant::name).reversed());
     }
 
 }

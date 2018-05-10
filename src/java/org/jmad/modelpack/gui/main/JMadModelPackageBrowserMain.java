@@ -6,6 +6,7 @@ package org.jmad.modelpack.gui.main;
 
 import org.jmad.modelpack.gui.panes.ModelPackagesPane;
 import org.jmad.modelpack.gui.panes.ModelRepositoryPane;
+import org.jmad.modelpack.gui.panes.PackageSelectionModel;
 import org.jmad.modelpack.service.JMadModelPackageService;
 import org.jmad.modelpack.service.ModelPackageRepositoryManager;
 import org.jmad.modelpack.service.conf.JMadModelPackageServiceConfiguration;
@@ -17,6 +18,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 
+import javafx.scene.Node;
+
 @Configuration
 @Import(value = JMadModelPackageServiceConfiguration.class)
 public class JMadModelPackageBrowserMain {
@@ -25,10 +28,15 @@ public class JMadModelPackageBrowserMain {
     @Name("packages")
     @Order(0)
     @Bean
-    public ModelPackagesPane packagesPane(JMadModelPackageService packageService) {
-        return new ModelPackagesPane(packageService);
+    public Node packageBrowser(JMadModelPackageService packageService, PackageSelectionModel packageSelectionModel) {
+        return new ModelPackagesPane(packageService, packageSelectionModel);
     }
     
+    @Bean
+    public PackageSelectionModel packageSelectionModel() {
+        return new PackageSelectionModel();
+    }
+
     @View
     @Name("repositories")
     @Order(1)
