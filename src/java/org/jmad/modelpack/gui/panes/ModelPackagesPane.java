@@ -29,14 +29,18 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.Button;
+import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
-public class ModelPackagesPane extends BorderPane {
+public class ModelPackagesPane extends TitledPane {
 
     private final JMadModelPackageService packageService;
+
     private final PackageFilterModel filterModel = new PackageFilterModel();
     private Button refreshButton;
     private TreeItem<PackageLine> root = new TreeItem<>(new PackageLine());
@@ -47,6 +51,9 @@ public class ModelPackagesPane extends BorderPane {
     public ModelPackagesPane(JMadModelPackageService packageService, PackageSelectionModel selectionModel) {
         this.packageService = requireNonNull(packageService, "packageService must not be null");
 
+        setText("Model Packages");
+        setCollapsible(false);
+        
         TreeTableColumn<PackageLine, String> packageColumn = new TreeTableColumn<>("package");
         packageColumn.setPrefWidth(250);
         packageColumn.setCellValueFactory(param -> param.getValue().getValue().packageNameProperty());
@@ -66,12 +73,20 @@ public class ModelPackagesPane extends BorderPane {
             }
             return treeItem.getValue().modelPackageVariant;
         }, treeTableView.getSelectionModel().selectedItemProperty()));
+        treeTableView.setPrefHeight(500);
 
-        setCenter(treeTableView);
-        setLeft(new PackageFilterPane(filterModel));
+        VBox left = new VBox();
+        left.setSpacing(4.0);
+        TitledPane filters = new TitledPane("Filters", new PackageFilterPane(filterModel));
+        filters.setCollapsible(false);
+        left.getChildren().add(filters);
 
         refreshButton = new Button("refresh");
-        setBottom(refreshButton);
+        left.getChildren().add(refreshButton);
+
+        HBox content = new HBox(left, treeTableView);
+        content.setSpacing(4.0);
+        setContent(content);
 
         update();
 

@@ -12,7 +12,7 @@ public class PackageFilterPane extends VBox {
 
     public PackageFilterPane(PackageFilterModel filterModel) {
         setPrefWidth(120);
-        setSpacing(3.0);
+        setSpacing(4.0);
         addCheckBox("releases", filterModel.showReleasesProperty());
         addCheckBox("tags", filterModel.showTagsProperty());
         addCheckBox("branches", filterModel.showBranchesProperty());
