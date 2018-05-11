@@ -5,14 +5,18 @@
 package org.jmad.modelpack.gui.panes;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.geometry.Insets;
 import javafx.scene.control.CheckBox;
 import javafx.scene.layout.VBox;
+
+import static org.jmad.modelpack.gui.panes.ModelPackGuiUtils.DEFAULT_SPACING;
 
 public class PackageFilterPane extends VBox {
 
     public PackageFilterPane(PackageFilterModel filterModel) {
         setPrefWidth(120);
-        setSpacing(4.0);
+        setSpacing(DEFAULT_SPACING);
+        setPadding(new Insets(DEFAULT_SPACING));
         addCheckBox("releases", filterModel.showReleasesProperty());
         addCheckBox("tags", filterModel.showTagsProperty());
         addCheckBox("branches", filterModel.showBranchesProperty());

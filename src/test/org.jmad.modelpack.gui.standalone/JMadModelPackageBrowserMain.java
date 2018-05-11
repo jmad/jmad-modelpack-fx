@@ -9,17 +9,16 @@ import static javafx.scene.control.TabPane.TabClosingPolicy.UNAVAILABLE;
 import java.util.Optional;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.jmad.modelpack.gui.panes.JMadModelDefinitionSelectionPane;
-import org.jmad.modelpack.gui.panes.ModelPackagesPane;
-import org.jmad.modelpack.gui.panes.ModelRepositoryPane;
-import org.jmad.modelpack.gui.panes.PackageSelectionModel;
-import org.jmad.modelpack.gui.panes.SelectedModelConfiguration;
+import org.jmad.modelpack.gui.panes.*;
 import org.jmad.modelpack.service.JMadModelPackageService;
 import org.jmad.modelpack.service.ModelPackageRepositoryManager;
 import org.jmad.modelpack.service.conf.JMadModelPackageServiceConfiguration;
+import org.scenicview.ScenicView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -42,7 +41,6 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.util.Callback;
 
 @Configuration
 @Import(value = JMadModelPackageServiceConfiguration.class)
@@ -52,17 +50,21 @@ public class JMadModelPackageBrowserMain extends Application{
     private static final String MAIN_NODE_NAME = "main_fx_node";
 
     @Bean
-    public Node packageBrowser(JMadModelPackageService packageService, PackageSelectionModel packageSelectionModel) {
+    public ModelPackagesPane packageBrowser(JMadModelPackageService packageService, PackageSelectionModel packageSelectionModel) {
         return new ModelPackagesPane(packageService, packageSelectionModel);
     }
 
     @Bean
-    public Node fullSelectionPane(Node packageBrowser, PackageSelectionModel jmadModelDefinitionSelectionModel) {
+    public Node fullSelectionPane(ModelPackagesPane packageBrowser, PackageSelectionModel jmadModelDefinitionSelectionModel) {
         JMadModelDefinitionSelectionPane selectionPane = new JMadModelDefinitionSelectionPane(
                 jmadModelDefinitionSelectionModel);
         HBox pane = new HBox(packageBrowser, selectionPane);
         pane.setFillHeight(true);
+        pane.setPadding(new Insets(ModelPackGuiUtils.DEFAULT_SPACING));
+        pane.setSpacing(ModelPackGuiUtils.DEFAULT_SPACING);
         pane.setAlignment(Pos.TOP_CENTER);
+        pane.setFillHeight(true);
+        pane.heightProperty().addListener((o, ev, nv) -> packageBrowser.setPrefHeight(nv.doubleValue()));
         return pane;
     }
 
@@ -83,8 +85,8 @@ public class JMadModelPackageBrowserMain extends Application{
 
         TabPane tabPane = new TabPane();
         tabPane.setTabClosingPolicy(UNAVAILABLE);
-        tabPane.getTabs().add(new Tab("models", fullSelectionPane));
-        tabPane.getTabs().add(new Tab("repos", repoListView));
+        tabPane.getTabs().add(new Tab("Available models", fullSelectionPane));
+        tabPane.getTabs().add(new Tab("Models repositories", repoListView));
 
         dialog.getDialogPane().setContent(tabPane);
 
@@ -92,26 +94,28 @@ public class JMadModelPackageBrowserMain extends Application{
         ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
         dialog.getDialogPane().getButtonTypes().addAll(buttonTypeOk, buttonTypeCancel);
 
-        dialog.setResultConverter(new Callback<ButtonType, SelectedModelConfiguration>() {
-            @Override
-            public SelectedModelConfiguration call(ButtonType b) {
-                if (b == buttonTypeOk) {
-                    JMadModelDefinition modelDefinition = selectionModel.selectedModelDefinitionProperty().get();
-                    if (modelDefinition == null) {
-                        return null;
-                    }
-                    
-                    OpticsDefinition opticsDefinition = selectionModel.selectedOpticsProperty().get();
-                    RangeDefinition rangeDefinition = selectionModel.selectedRangeProperty().get();
+        dialog.setTitle("JMad model selection");
+        dialog.getDialogPane().setPadding(new Insets(0));
+        tabPane.setPadding(new Insets(0));
 
-                    JMadModelStartupConfiguration startupConfiguration = new JMadModelStartupConfiguration();
-                    startupConfiguration.setInitialOpticsDefinition(opticsDefinition);
-                    startupConfiguration.setInitialRangeDefinition(rangeDefinition);
 
-                    return new SelectedModelConfiguration(modelDefinition, startupConfiguration);
-                } else {
+        dialog.setResultConverter(b -> {
+            if (b == buttonTypeOk) {
+                JMadModelDefinition modelDefinition = selectionModel.selectedModelDefinitionProperty().get();
+                if (modelDefinition == null) {
                     return null;
                 }
+
+                OpticsDefinition opticsDefinition = selectionModel.selectedOpticsProperty().get();
+                RangeDefinition rangeDefinition = selectionModel.selectedRangeProperty().get();
+
+                JMadModelStartupConfiguration startupConfiguration = new JMadModelStartupConfiguration();
+                startupConfiguration.setInitialOpticsDefinition(opticsDefinition);
+                startupConfiguration.setInitialRangeDefinition(rangeDefinition);
+
+                return new SelectedModelConfiguration(modelDefinition, startupConfiguration);
+            } else {
+                return null;
             }
         });
 
@@ -126,6 +130,8 @@ public class JMadModelPackageBrowserMain extends Application{
             modelDefinitionSelectionDialog.setWidth(1000);
             modelDefinitionSelectionDialog.setHeight(700);
             modelDefinitionSelectionDialog.setResizable(true);
+            modelDefinitionSelectionDialog.initModality(Modality.NONE);
+            ScenicView.show(modelDefinitionSelectionDialog.getDialogPane());
             Optional<SelectedModelConfiguration> result = modelDefinitionSelectionDialog.showAndWait();
             if (result.isPresent()) {
                 LOGGER.info("Selected model configuration: {}", result.get());
