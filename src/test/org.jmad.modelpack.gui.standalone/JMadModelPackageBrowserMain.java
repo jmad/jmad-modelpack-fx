@@ -101,8 +101,8 @@ public class JMadModelPackageBrowserMain extends Application{
                         return null;
                     }
                     
-                    OpticsDefinition opticsDefinition = selectionModel.selecteOpticsProperty().get();
-                    RangeDefinition rangeDefinition = selectionModel.selecteRangeProperty().get();
+                    OpticsDefinition opticsDefinition = selectionModel.selectedOpticsProperty().get();
+                    RangeDefinition rangeDefinition = selectionModel.selectedRangeProperty().get();
 
                     JMadModelStartupConfiguration startupConfiguration = new JMadModelStartupConfiguration();
                     startupConfiguration.setInitialOpticsDefinition(opticsDefinition);

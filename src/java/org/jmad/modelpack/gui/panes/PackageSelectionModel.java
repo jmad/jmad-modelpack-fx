@@ -4,9 +4,8 @@
 
 package org.jmad.modelpack.gui.panes;
 
+import static freetimelabs.io.reactorfx.schedulers.FxSchedulers.fxThread;
 import static javafx.collections.FXCollections.observableArrayList;
-
-import java.util.List;
 
 import org.jmad.modelpack.domain.ModelPackageVariant;
 import org.jmad.modelpack.service.JMadModelPackageService;
@@ -29,28 +28,28 @@ public class PackageSelectionModel {
     private final ObjectProperty<JMadModelDefinition> selectedModelDefinition = new SimpleObjectProperty<>();
 
     private final ListProperty<OpticsDefinition> availableOptics = new SimpleListProperty<>(observableArrayList());
-    private final ObjectProperty<OpticsDefinition> selecteOptics = new SimpleObjectProperty<>();
+    private final ObjectProperty<OpticsDefinition> selectedOptics = new SimpleObjectProperty<>();
 
     private final ListProperty<SequenceDefinition> availableSequences = new SimpleListProperty<>(observableArrayList());
-    private final ObjectProperty<SequenceDefinition> selecteSequence = new SimpleObjectProperty<>();
+    private final ObjectProperty<SequenceDefinition> selectedSequence = new SimpleObjectProperty<>();
 
     private final ListProperty<RangeDefinition> availableRanges = new SimpleListProperty<>(observableArrayList());
-    private final ObjectProperty<RangeDefinition> selecteRange = new SimpleObjectProperty<>();
+    private final ObjectProperty<RangeDefinition> selectedRange = new SimpleObjectProperty<>();
 
     public PackageSelectionModel(JMadModelPackageService modelPackageService) {
         selectedPackage.addListener((p, ov, nv) -> {
             if (nv != null) {
-                List<JMadModelDefinition> defs = modelPackageService.modelDefinitionsFrom(nv).collectList().block();
-                availableDefinitions.setAll(defs);
-                if (!defs.isEmpty()) {
-                    JMadModelDefinition selectedModelDef = defs.get(0);
-                    update(selectedModelDef);
-                }
+                modelPackageService.modelDefinitionsFrom(nv).collectList().publishOn(fxThread()).subscribe(defs -> {
+                    availableDefinitions.setAll(defs);
+                    if (!defs.isEmpty()) {
+                        JMadModelDefinition selectedModelDef = defs.get(0);
+                        update(selectedModelDef);
+                    }
+                });
             }
         });
 
         selectedModelDefinition.addListener((p, ov, nv) -> update(nv));
-
     }
 
     private void update(JMadModelDefinition selectedModelDef) {
@@ -68,15 +67,15 @@ public class PackageSelectionModel {
     }
 
     private void update(SequenceDefinition sequenceDefinition) {
-        selecteSequenceProperty().set(sequenceDefinition);
+        selectedSequenceProperty().set(sequenceDefinition);
         if (sequenceDefinition != null) {
             availableRangesProperty().setAll(sequenceDefinition.getRangeDefinitions());
-            selecteRangeProperty().set(sequenceDefinition.getDefaultRangeDefinition());
+            selectedRangeProperty().set(sequenceDefinition.getDefaultRangeDefinition());
         }
     }
 
     private void update(OpticsDefinition opticsDefinition) {
-        selecteOpticsProperty().set(opticsDefinition);
+        selectedOpticsProperty().set(opticsDefinition);
     }
 
     public ListProperty<JMadModelDefinition> availableDefinitionsProperty() {
@@ -95,24 +94,24 @@ public class PackageSelectionModel {
         return availableOptics;
     }
 
-    public ObjectProperty<OpticsDefinition> selecteOpticsProperty() {
-        return selecteOptics;
+    public ObjectProperty<OpticsDefinition> selectedOpticsProperty() {
+        return selectedOptics;
     }
 
     public ListProperty<SequenceDefinition> availableSequencesProperty() {
         return availableSequences;
     }
 
-    public ObjectProperty<SequenceDefinition> selecteSequenceProperty() {
-        return selecteSequence;
+    public ObjectProperty<SequenceDefinition> selectedSequenceProperty() {
+        return selectedSequence;
     }
 
     public ListProperty<RangeDefinition> availableRangesProperty() {
         return availableRanges;
     }
 
-    public ObjectProperty<RangeDefinition> selecteRangeProperty() {
-        return selecteRange;
+    public ObjectProperty<RangeDefinition> selectedRangeProperty() {
+        return selectedRange;
     }
 
 }

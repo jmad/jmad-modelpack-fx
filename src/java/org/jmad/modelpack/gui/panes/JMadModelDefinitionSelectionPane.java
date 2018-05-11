@@ -53,17 +53,17 @@ public class JMadModelDefinitionSelectionPane extends VBox {
         sequenceCombo.itemsProperty().bind(selectionModel.availableSequencesProperty());
 
         sequenceCombo.getSelectionModel().selectedItemProperty()
-                .addListener((p, ov, nv) -> selectionModel.selecteSequenceProperty().set(nv));
-        selectionModel.selecteSequenceProperty()
+                .addListener((p, ov, nv) -> selectionModel.selectedSequenceProperty().set(nv));
+        selectionModel.selectedSequenceProperty()
                 .addListener((p, ov, nv) -> sequenceCombo.getSelectionModel().select(nv));
 
         content.getChildren().add(new Label("Range:"));
         ComboBox<RangeDefinition> rangeCombo = new ComboBox<>();
         content.getChildren().add(rangeCombo);
         rangeCombo.itemsProperty().bind(selectionModel.availableRangesProperty());
-        selectionModel.selecteRangeProperty().addListener((p, ov, nv) -> rangeCombo.getSelectionModel().select(nv));
+        selectionModel.selectedRangeProperty().addListener((p, ov, nv) -> rangeCombo.getSelectionModel().select(nv));
         rangeCombo.getSelectionModel().selectedItemProperty()
-                .addListener((p, ov, nv) -> selectionModel.selecteRangeProperty().set(nv));
+                .addListener((p, ov, nv) -> selectionModel.selectedRangeProperty().set(nv));
 
         content.getChildren().add(new Label("Optics:"));
         ListView<OpticsDefinition> opticsDefinitions = new ListView<>();
@@ -73,8 +73,8 @@ public class JMadModelDefinitionSelectionPane extends VBox {
         opticsDefinitions.setPrefWidth(300);
         opticsDefinitions.itemsProperty().bind(selectionModel.availableOpticsProperty());
         opticsDefinitions.getSelectionModel().selectedItemProperty()
-                .addListener((p, ov, nv) -> selectionModel.selecteOpticsProperty().set(nv));
-        selectionModel.selecteOpticsProperty()
+                .addListener((p, ov, nv) -> selectionModel.selectedOpticsProperty().set(nv));
+        selectionModel.selectedOpticsProperty()
                 .addListener((p, ov, nv) -> opticsDefinitions.getSelectionModel().select(nv));
     }
 
