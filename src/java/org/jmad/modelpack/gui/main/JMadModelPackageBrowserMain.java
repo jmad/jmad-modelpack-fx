@@ -12,6 +12,7 @@ import org.jmad.modelpack.gui.panes.JMadModelDefinitionSelectionPane;
 import org.jmad.modelpack.gui.panes.ModelPackagesPane;
 import org.jmad.modelpack.gui.panes.ModelRepositoryPane;
 import org.jmad.modelpack.gui.panes.PackageSelectionModel;
+import org.jmad.modelpack.gui.panes.SelectedModelConfiguration;
 import org.jmad.modelpack.service.JMadModelPackageService;
 import org.jmad.modelpack.service.ModelPackageRepositoryManager;
 import org.jmad.modelpack.service.conf.JMadModelPackageServiceConfiguration;
@@ -21,7 +22,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+import cern.accsoft.steering.jmad.domain.machine.RangeDefinition;
+import cern.accsoft.steering.jmad.model.JMadModelStartupConfiguration;
 import cern.accsoft.steering.jmad.modeldefs.domain.JMadModelDefinition;
+import cern.accsoft.steering.jmad.modeldefs.domain.OpticsDefinition;
+import javafx.beans.property.ObjectProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -45,10 +50,10 @@ public class JMadModelPackageBrowserMain {
     }
 
     @Bean
-    public Node fullSelectionPane(Node packageBrowser,
-            PackageSelectionModel jmadModelDefinitionSelectionModel) {
-        
-        JMadModelDefinitionSelectionPane selectionPane = new JMadModelDefinitionSelectionPane(jmadModelDefinitionSelectionModel);
+    public Node fullSelectionPane(Node packageBrowser, PackageSelectionModel jmadModelDefinitionSelectionModel) {
+
+        JMadModelDefinitionSelectionPane selectionPane = new JMadModelDefinitionSelectionPane(
+                jmadModelDefinitionSelectionModel);
         HBox pane = new HBox(packageBrowser, selectionPane);
         pane.setFillHeight(true);
         pane.setAlignment(Pos.TOP_CENTER);
@@ -65,12 +70,10 @@ public class JMadModelPackageBrowserMain {
         return new ModelRepositoryPane(manager);
     }
 
-    
     @Bean
-    public Dialog<JMadModelDefinition> modelDefinitionSelectionDialog(Node fullSelectionPane, 
-            ModelRepositoryPane repoListView) {
-        Dialog<JMadModelDefinition> dialog = new Dialog<>();
-        
+    public Dialog<SelectedModelConfiguration> modelDefinitionSelectionDialog(Node fullSelectionPane,
+            ModelRepositoryPane repoListView, PackageSelectionModel selectionModel) {
+        Dialog<SelectedModelConfiguration> dialog = new Dialog<>();
 
         TabPane tabPane = new TabPane();
         tabPane.setTabClosingPolicy(UNAVAILABLE);
@@ -83,18 +86,20 @@ public class JMadModelPackageBrowserMain {
         ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
         dialog.getDialogPane().getButtonTypes().addAll(buttonTypeOk, buttonTypeCancel);
 
-        dialog.setResultConverter(new Callback<ButtonType, JMadModelDefinition>() {
+        dialog.setResultConverter(new Callback<ButtonType, SelectedModelConfiguration>() {
             @Override
-            public JMadModelDefinition call(ButtonType b) {
-
-                System.out.println(b);
-
+            public SelectedModelConfiguration call(ButtonType b) {
                 if (b == buttonTypeOk) {
-                    System.out.println("Selected");
-                    /* TODO! */
-                    return null;
+                    JMadModelDefinition modelDefinition = selectionModel.selectedModelDefinitionProperty().get();
+                    OpticsDefinition opticsDefinition = selectionModel.selecteOpticsProperty().get();
+                    RangeDefinition rangeDefinition = selectionModel.selecteRangeProperty().get();
+
+                    JMadModelStartupConfiguration startupConfiguration = new JMadModelStartupConfiguration();
+                    startupConfiguration.setInitialOpticsDefinition(opticsDefinition);
+                    startupConfiguration.setInitialRangeDefinition(rangeDefinition);
+
+                    return new SelectedModelConfiguration(modelDefinition, startupConfiguration);
                 } else {
-                    System.out.println("canceled");
                     return null;
                 }
             }
@@ -105,14 +110,20 @@ public class JMadModelPackageBrowserMain {
 
     @View
     @Bean
-    public BorderPane view(Dialog<JMadModelDefinition> modelDefinitionSelectionDialog) {
+    public BorderPane view(Dialog<SelectedModelConfiguration> modelDefinitionSelectionDialog) {
         BorderPane pane = new BorderPane();
         Button button = new Button("select model");
         button.setOnAction((evt) -> {
             modelDefinitionSelectionDialog.setWidth(900);
             modelDefinitionSelectionDialog.setHeight(700);
             modelDefinitionSelectionDialog.setResizable(true);
-            Optional<JMadModelDefinition> result = modelDefinitionSelectionDialog.showAndWait();
+            Optional<SelectedModelConfiguration> result = modelDefinitionSelectionDialog.showAndWait();
+            if (result.isPresent()) {
+                System.out.println("Selected model configuration: " + result.get());
+            } else {
+                System.out.println("No model configuration selected.");
+            }
+
         });
         pane.setCenter(button);
         return pane;
