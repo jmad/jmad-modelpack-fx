@@ -114,7 +114,7 @@ public class JMadModelPackageBrowserMain {
         BorderPane pane = new BorderPane();
         Button button = new Button("select model");
         button.setOnAction((evt) -> {
-            modelDefinitionSelectionDialog.setWidth(900);
+            modelDefinitionSelectionDialog.setWidth(1000);
             modelDefinitionSelectionDialog.setHeight(700);
             modelDefinitionSelectionDialog.setResizable(true);
             Optional<SelectedModelConfiguration> result = modelDefinitionSelectionDialog.showAndWait();
