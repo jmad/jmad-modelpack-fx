@@ -19,6 +19,7 @@ import org.jmad.modelpack.domain.ModelPackageVariant;
 import org.jmad.modelpack.domain.ModelPackages;
 import org.jmad.modelpack.domain.Variant;
 import org.jmad.modelpack.service.JMadModelPackageService;
+import org.jmad.modelpack.service.gitlab.domain.AbstractGitVariant;
 
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.TreeMultimap;
@@ -53,7 +54,7 @@ public class ModelPackagesPane extends TitledPane {
 
         setText("Model Packages");
         setCollapsible(false);
-        
+
         TreeTableColumn<PackageLine, String> packageColumn = new TreeTableColumn<>("package");
         packageColumn.setPrefWidth(250);
         packageColumn.setCellValueFactory(param -> param.getValue().getValue().packageNameProperty());
@@ -157,7 +158,11 @@ public class ModelPackagesPane extends TitledPane {
         }
 
         private static String stringFor(Variant variant) {
-            return variant.getClass().getSimpleName().toLowerCase() + ": " + variant.name();
+            if (variant instanceof AbstractGitVariant) {
+                return variant.getClass().getSimpleName().toLowerCase() + ": " + variant.name();
+            } else {
+                return variant.name();
+            }
         }
 
         private PackageLine() {

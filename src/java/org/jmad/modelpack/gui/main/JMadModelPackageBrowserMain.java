@@ -91,6 +91,10 @@ public class JMadModelPackageBrowserMain {
             public SelectedModelConfiguration call(ButtonType b) {
                 if (b == buttonTypeOk) {
                     JMadModelDefinition modelDefinition = selectionModel.selectedModelDefinitionProperty().get();
+                    if (modelDefinition == null) {
+                        return null;
+                    }
+                    
                     OpticsDefinition opticsDefinition = selectionModel.selecteOpticsProperty().get();
                     RangeDefinition rangeDefinition = selectionModel.selecteRangeProperty().get();
 

@@ -31,16 +31,16 @@ public class PackageFilterModel {
             return pv -> {
                 /* order is important as release inherits from tag! */
                 Variant variant = pv.variant();
-                if ((variant instanceof Release) && showReleases.get()) {
-                    return true;
+                if ((variant instanceof Release) && !showReleases.get()) {
+                    return false;
                 }
-                if (((variant instanceof Tag) && !(variant instanceof Release)) && showTags.get()) {
-                    return true;
+                if (((variant instanceof Tag) && !(variant instanceof Release)) && !showTags.get()) {
+                    return false;
                 }
-                if ((variant instanceof Branch) && showBranches.get()) {
-                    return true;
+                if ((variant instanceof Branch) && !showBranches.get()) {
+                    return false;
                 }
-                return false;
+                return true;
             };
         }, showTags, showReleases, showBranches);
 

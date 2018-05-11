@@ -49,11 +49,17 @@ public class PackageSelectionModel {
             }
         });
 
+        selectedModelDefinition.addListener((p, ov, nv) -> update(nv));
+
     }
 
     private void update(JMadModelDefinition selectedModelDef) {
         selectedModelDefinitionProperty().set(selectedModelDef);
 
+        if (selectedModelDef == null) {
+            return;
+        }
+        
         availableOpticsProperty().setAll(selectedModelDef.getOpticsDefinitions());
         update(selectedModelDef.getDefaultOpticsDefinition());
 
