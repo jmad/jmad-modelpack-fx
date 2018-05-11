@@ -2,12 +2,16 @@
  * Copyright (c) 2018 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package org.jmad.modelpack.gui.main;
+package org.jmad.modelpack.gui.standalone;
 
 import static javafx.scene.control.TabPane.TabClosingPolicy.UNAVAILABLE;
 
 import java.util.Optional;
 
+import javafx.application.Application;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import org.jmad.modelpack.gui.panes.JMadModelDefinitionSelectionPane;
 import org.jmad.modelpack.gui.panes.ModelPackagesPane;
 import org.jmad.modelpack.gui.panes.ModelRepositoryPane;
@@ -16,8 +20,10 @@ import org.jmad.modelpack.gui.panes.SelectedModelConfiguration;
 import org.jmad.modelpack.service.JMadModelPackageService;
 import org.jmad.modelpack.service.ModelPackageRepositoryManager;
 import org.jmad.modelpack.service.conf.JMadModelPackageServiceConfiguration;
-import org.minifx.workbench.MiniFx;
-import org.minifx.workbench.annotations.View;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -26,7 +32,6 @@ import cern.accsoft.steering.jmad.domain.machine.RangeDefinition;
 import cern.accsoft.steering.jmad.model.JMadModelStartupConfiguration;
 import cern.accsoft.steering.jmad.modeldefs.domain.JMadModelDefinition;
 import cern.accsoft.steering.jmad.modeldefs.domain.OpticsDefinition;
-import javafx.beans.property.ObjectProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -35,14 +40,16 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 
 @Configuration
 @Import(value = JMadModelPackageServiceConfiguration.class)
-public class JMadModelPackageBrowserMain {
+public class JMadModelPackageBrowserMain extends Application{
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JMadModelPackageBrowserMain.class);
+    private static final String MAIN_NODE_NAME = "main_fx_node";
 
     @Bean
     public Node packageBrowser(JMadModelPackageService packageService, PackageSelectionModel packageSelectionModel) {
@@ -51,7 +58,6 @@ public class JMadModelPackageBrowserMain {
 
     @Bean
     public Node fullSelectionPane(Node packageBrowser, PackageSelectionModel jmadModelDefinitionSelectionModel) {
-
         JMadModelDefinitionSelectionPane selectionPane = new JMadModelDefinitionSelectionPane(
                 jmadModelDefinitionSelectionModel);
         HBox pane = new HBox(packageBrowser, selectionPane);
@@ -112,8 +118,7 @@ public class JMadModelPackageBrowserMain {
         return dialog;
     }
 
-    @View
-    @Bean
+    @Bean(MAIN_NODE_NAME)
     public BorderPane view(Dialog<SelectedModelConfiguration> modelDefinitionSelectionDialog) {
         BorderPane pane = new BorderPane();
         Button button = new Button("select model");
@@ -123,9 +128,9 @@ public class JMadModelPackageBrowserMain {
             modelDefinitionSelectionDialog.setResizable(true);
             Optional<SelectedModelConfiguration> result = modelDefinitionSelectionDialog.showAndWait();
             if (result.isPresent()) {
-                System.out.println("Selected model configuration: " + result.get());
+                LOGGER.info("Selected model configuration: {}", result.get());
             } else {
-                System.out.println("No model configuration selected.");
+                LOGGER.info("No model configuration selected.");
             }
 
         });
@@ -133,8 +138,18 @@ public class JMadModelPackageBrowserMain {
         return pane;
     }
 
-    public static final void main(String... args) {
-        MiniFx.launcher(JMadModelPackageBrowserMain.class).launch(args);
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        ApplicationContext ctx = new AnnotationConfigApplicationContext(JMadModelPackageBrowserMain.class);
+
+        Parent mainNode = ctx.getBean(MAIN_NODE_NAME, Parent.class);
+
+        Scene scene = new Scene(mainNode);
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 
+    public static void main(String[] args) {
+        Application.launch(JMadModelPackageBrowserMain.class);
+    }
 }
