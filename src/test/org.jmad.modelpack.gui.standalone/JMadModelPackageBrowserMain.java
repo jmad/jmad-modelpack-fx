@@ -50,27 +50,30 @@ public class JMadModelPackageBrowserMain extends Application{
     private static final String MAIN_NODE_NAME = "main_fx_node";
 
     @Bean
-    public ModelPackagesPane packageBrowser(JMadModelPackageService packageService, PackageSelectionModel packageSelectionModel) {
-        return new ModelPackagesPane(packageService, packageSelectionModel);
+    public JMadModelPackagesSelectionPane packageBrowser(JMadModelPackageService packageService, ModelPackSelectionState modelPackSelectionState) {
+        return new JMadModelPackagesSelectionPane(packageService, modelPackSelectionState);
     }
 
     @Bean
-    public Node fullSelectionPane(ModelPackagesPane packageBrowser, PackageSelectionModel jmadModelDefinitionSelectionModel) {
+    public Node fullSelectionPane(JMadModelPackagesSelectionPane packageBrowser, ModelPackSelectionState jmadModelDefinitionSelectionModel) {
         JMadModelDefinitionSelectionPane selectionPane = new JMadModelDefinitionSelectionPane(
                 jmadModelDefinitionSelectionModel);
         HBox pane = new HBox(packageBrowser, selectionPane);
         pane.setFillHeight(true);
-        pane.setPadding(new Insets(ModelPackGuiUtils.DEFAULT_SPACING));
-        pane.setSpacing(ModelPackGuiUtils.DEFAULT_SPACING);
+        pane.setPadding(new Insets(GuiUtils.DEFAULT_SPACING));
+        pane.setSpacing(GuiUtils.DEFAULT_SPACING);
         pane.setAlignment(Pos.TOP_CENTER);
         pane.setFillHeight(true);
-        pane.heightProperty().addListener((o, ev, nv) -> packageBrowser.setPrefHeight(nv.doubleValue()));
+//        pane.heightProperty().addListener((o, ev, nv) -> {
+//            packageBrowser.setPrefHeight(nv.doubleValue());
+//            selectionPane.setPrefHeight(nv.doubleValue());
+//        });
         return pane;
     }
 
     @Bean
-    public PackageSelectionModel packageSelectionModel(JMadModelPackageService packageService) {
-        return new PackageSelectionModel(packageService);
+    public ModelPackSelectionState packageSelectionModel(JMadModelPackageService packageService) {
+        return new ModelPackSelectionState(packageService);
     }
 
     @Bean
@@ -80,7 +83,7 @@ public class JMadModelPackageBrowserMain extends Application{
 
     @Bean
     public Dialog<SelectedModelConfiguration> modelDefinitionSelectionDialog(Node fullSelectionPane,
-            ModelRepositoryPane repoListView, PackageSelectionModel selectionModel) {
+            ModelRepositoryPane repoListView, ModelPackSelectionState selectionModel) {
         Dialog<SelectedModelConfiguration> dialog = new Dialog<>();
 
         TabPane tabPane = new TabPane();

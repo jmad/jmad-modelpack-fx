@@ -9,7 +9,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.CheckBox;
 import javafx.scene.layout.VBox;
 
-import static org.jmad.modelpack.gui.panes.ModelPackGuiUtils.DEFAULT_SPACING;
+import static org.jmad.modelpack.gui.panes.GuiUtils.DEFAULT_SPACING;
 
 public class PackageFilterPane extends VBox {
 

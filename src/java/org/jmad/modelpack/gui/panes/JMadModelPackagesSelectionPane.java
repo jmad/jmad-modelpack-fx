@@ -9,16 +9,12 @@ import static java.util.Comparator.comparing;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static org.jmad.modelpack.gui.panes.FxUtils.*;
-import static org.jmad.modelpack.gui.panes.ModelPackGuiUtils.DEFAULT_SPACING;
+import static org.jmad.modelpack.gui.panes.GuiUtils.DEFAULT_SPACING;
 
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
-import com.google.common.base.Functions;
-import com.google.common.base.Predicates;
 import javafx.geometry.Insets;
 import javafx.scene.text.FontWeight;
 import org.jmad.modelpack.domain.ModelPackage;
@@ -44,7 +40,7 @@ import javafx.scene.control.TreeTableView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-public class ModelPackagesPane extends TitledPane {
+public class JMadModelPackagesSelectionPane extends TitledPane {
 
     private final JMadModelPackageService packageService;
 
@@ -53,7 +49,7 @@ public class ModelPackagesPane extends TitledPane {
     private final Button refreshButton;
     private final SetMultimap<ModelPackage, ModelPackageVariant> map;
 
-    public ModelPackagesPane(JMadModelPackageService packageService, PackageSelectionModel selectionModel) {
+    public JMadModelPackagesSelectionPane(JMadModelPackageService packageService, ModelPackSelectionState selectionModel) {
         this.packageService = requireNonNull(packageService, "packageService must not be null");
 
         map = TreeMultimap.create(comparing(ModelPackage::name), ModelPackages.packageVariantComparator());
@@ -71,6 +67,7 @@ public class ModelPackagesPane extends TitledPane {
         HBox content = new HBox(packagesOptionsBox, packagesTable);
         content.setSpacing(DEFAULT_SPACING);
         content.setPadding(new Insets(DEFAULT_SPACING));
+        content.setFillHeight(true);
         setContent(content);
 
         update();
@@ -98,7 +95,7 @@ public class ModelPackagesPane extends TitledPane {
         return packagesOptionsBox;
     }
 
-    private TreeTableView<PackageLine> createPackagesSelectionTable(PackageSelectionModel selectionModel) {
+    private TreeTableView<PackageLine> createPackagesSelectionTable(ModelPackSelectionState selectionModel) {
         TreeTableColumn<PackageLine, String> packageColumn = new TreeTableColumn<>("Package Name");
         packageColumn.setPrefWidth(250);
         packageColumn.setCellValueFactory(param -> param.getValue().getValue().packageNameProperty());
