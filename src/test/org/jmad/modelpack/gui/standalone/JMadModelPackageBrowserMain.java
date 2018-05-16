@@ -8,10 +8,6 @@ import static javafx.scene.control.TabPane.TabClosingPolicy.UNAVAILABLE;
 
 import java.util.Optional;
 
-import javafx.application.Application;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
 import org.jmad.modelpack.gui.panes.JMadModelDefinitionSelectionPane;
 import org.jmad.modelpack.gui.panes.ModelPackagesPane;
 import org.jmad.modelpack.gui.panes.ModelRepositoryPane;
@@ -32,8 +28,11 @@ import cern.accsoft.steering.jmad.domain.machine.RangeDefinition;
 import cern.accsoft.steering.jmad.model.JMadModelStartupConfiguration;
 import cern.accsoft.steering.jmad.modeldefs.domain.JMadModelDefinition;
 import cern.accsoft.steering.jmad.modeldefs.domain.OpticsDefinition;
+import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
@@ -42,6 +41,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 
 @Configuration
