@@ -6,8 +6,6 @@ package org.jmad.modelpack.gui.panes;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Objects;
-
 import cern.accsoft.steering.jmad.model.JMadModelStartupConfiguration;
 import cern.accsoft.steering.jmad.modeldefs.domain.JMadModelDefinition;
 
