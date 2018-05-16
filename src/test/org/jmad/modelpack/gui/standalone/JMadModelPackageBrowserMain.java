@@ -18,7 +18,6 @@ import org.jmad.modelpack.gui.panes.*;
 import org.jmad.modelpack.service.JMadModelPackageService;
 import org.jmad.modelpack.service.ModelPackageRepositoryManager;
 import org.jmad.modelpack.service.conf.JMadModelPackageServiceConfiguration;
-import org.scenicview.ScenicView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -134,7 +133,7 @@ public class JMadModelPackageBrowserMain extends Application{
             modelDefinitionSelectionDialog.setHeight(700);
             modelDefinitionSelectionDialog.setResizable(true);
             modelDefinitionSelectionDialog.initModality(Modality.NONE);
-            ScenicView.show(modelDefinitionSelectionDialog.getDialogPane());
+           // ScenicView.show(modelDefinitionSelectionDialog.getDialogPane());
             Optional<SelectedModelConfiguration> result = modelDefinitionSelectionDialog.showAndWait();
             if (result.isPresent()) {
                 LOGGER.info("Selected model configuration: {}", result.get());
