@@ -1,13 +1,21 @@
 plugins {
     id 'java'
     id 'jacoco'
+    id 'idea'
+    id 'eclipse'
 }
 
-repositories { mavenCentral() }
+group = 'jmad'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+
+repositories {
+    mavenCentral()
+    maven { url "https://dl.bintray.com/jmad/jmad-repo" }
+}
 
 dependencies {
-    compile group: 'org.jmad', name: 'jmad-core', version: '0.0.0'
-    compile group: 'org.jmad', name: 'jmad-modelpack-service', version: '0.0.0'
+    compile group: 'jmad', name: 'jmad-modelpack-service', version: '0.1.0'
 
     compile group: 'org.springframework', name: 'spring-core', version: '5.0.6.RELEASE'
     compile group: 'org.springframework', name: 'spring-context', version: '5.0.6.RELEASE'
@@ -61,4 +69,18 @@ task javadocJar(type: Jar) {
 task sourcesJar(type: Jar) {
     classifier = 'sources'
     from sourceSets.main.allSource
+}
+
+eclipse {
+    classpath {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
 }

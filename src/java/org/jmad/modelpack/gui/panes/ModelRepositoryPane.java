@@ -7,6 +7,7 @@ package org.jmad.modelpack.gui.panes;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -39,12 +40,12 @@ public class ModelRepositoryPane extends BorderPane {
         TableView<RepoLine> repositoryView = new TableView<>(repos);
         repositoryView.setEditable(true);
 
-        TableColumn<RepoLine, Boolean> enabledCol = new TableColumn<>("enabled");
+        TableColumn<RepoLine, Boolean> enabledCol = new TableColumn<>("Enabled");
         enabledCol.setCellFactory(CheckBoxTableCell.forTableColumn(enabledCol));
         enabledCol.setCellValueFactory(r -> r.getValue().enabled);
         enabledCol.setEditable(true);
 
-        TableColumn<RepoLine, String> baseUrlCol = new TableColumn<>("repo");
+        TableColumn<RepoLine, String> baseUrlCol = new TableColumn<>("Repository");
         baseUrlCol.setCellValueFactory(r -> r.getValue().stringRepresentation);
         baseUrlCol.setEditable(false);
         baseUrlCol.setResizable(true);
@@ -68,6 +69,7 @@ public class ModelRepositoryPane extends BorderPane {
         // @formatter:off
         return m.entrySet().stream()
                 .map(e -> new RepoLine(e.getKey(), e.getValue().asBoolEnabled()))
+                .sorted(Comparator.comparing(l -> l.stringRepresentation.getValue()))
                 .collect(toList());
         // @formatter:on
     }

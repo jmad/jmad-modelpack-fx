@@ -19,7 +19,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
-public class PackageSelectionModel {
+public class ModelPackSelectionState {
 
     private final ObjectProperty<ModelPackageVariant> selectedPackage = new SimpleObjectProperty<>();
 
@@ -36,7 +36,7 @@ public class PackageSelectionModel {
     private final ListProperty<RangeDefinition> availableRanges = new SimpleListProperty<>(observableArrayList());
     private final ObjectProperty<RangeDefinition> selectedRange = new SimpleObjectProperty<>();
 
-    public PackageSelectionModel(JMadModelPackageService modelPackageService) {
+    public ModelPackSelectionState(JMadModelPackageService modelPackageService) {
         selectedPackage.addListener((p, ov, nv) -> {
             if (nv != null) {
                 modelPackageService.modelDefinitionsFrom(nv).collectList().publishOn(fxThread()).subscribe(defs -> {
