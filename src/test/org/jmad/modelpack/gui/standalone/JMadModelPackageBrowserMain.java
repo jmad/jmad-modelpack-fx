@@ -82,7 +82,7 @@ public class JMadModelPackageBrowserMain extends Application{
 
     @Bean
     public Dialog<SelectedModelConfiguration> modelDefinitionSelectionDialog(Node fullSelectionPane,
-            ModelRepositoryPane repoListView, ModelPackSelectionState selectionModel) {
+                                                                             ModelRepositoryPane repoListView, ModelPackSelectionState selectionModel) {
         Dialog<SelectedModelConfiguration> dialog = new Dialog<>();
 
         TabPane tabPane = new TabPane();
