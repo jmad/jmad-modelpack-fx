@@ -8,11 +8,10 @@ import static javafx.scene.control.TabPane.TabClosingPolicy.UNAVAILABLE;
 
 import java.util.Optional;
 
-import org.jmad.modelpack.gui.panes.JMadModelDefinitionSelectionPane;
-import org.jmad.modelpack.gui.panes.ModelPackagesPane;
-import org.jmad.modelpack.gui.panes.ModelRepositoryPane;
-import org.jmad.modelpack.gui.panes.PackageSelectionModel;
-import org.jmad.modelpack.gui.panes.SelectedModelConfiguration;
+import javafx.geometry.Insets;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import org.jmad.modelpack.gui.panes.*;
 import org.jmad.modelpack.service.JMadModelPackageService;
 import org.jmad.modelpack.service.ModelPackageRepositoryManager;
 import org.jmad.modelpack.service.conf.JMadModelPackageServiceConfiguration;
