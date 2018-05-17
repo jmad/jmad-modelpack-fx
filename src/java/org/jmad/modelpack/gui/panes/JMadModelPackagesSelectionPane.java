@@ -8,14 +8,18 @@ import static com.google.common.base.Predicates.not;
 import static java.util.Comparator.comparing;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
-import static org.jmad.modelpack.gui.panes.FxUtils.*;
-import static org.jmad.modelpack.gui.panes.GuiUtils.DEFAULT_SPACING;
+import static org.jmad.modelpack.gui.util.FxUtils.*;
+import static org.jmad.modelpack.gui.util.GuiUtils.DEFAULT_SPACING;
 
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import com.google.common.collect.ImmutableMap;
 import javafx.geometry.Insets;
+import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.text.FontWeight;
 import org.jmad.modelpack.domain.ModelPackage;
 import org.jmad.modelpack.domain.ModelPackageVariant;
@@ -32,15 +36,10 @@ import freetimelabs.io.reactorfx.schedulers.FxSchedulers;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.scene.control.Button;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeTableColumn;
-import javafx.scene.control.TreeTableView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-public class JMadModelPackagesSelectionPane extends TitledPane {
+public class JMadModelPackagesSelectionPane extends AnchorPane {
 
     private final JMadModelPackageService packageService;
 
@@ -57,18 +56,23 @@ public class JMadModelPackagesSelectionPane extends TitledPane {
         packagesTableRoot = new TreeItem<>(new PackageLine());
         refreshButton = new Button("Refresh");
 
-        setText("Model Packages");
-        setCollapsible(false);
-        setFontWeight(this, FontWeight.BOLD);
+        TitledPane box = new TitledPane();
+        box.setText("Model Packages");
+        box.setCollapsible(false);
+        setFontWeight(box, FontWeight.BOLD);
 
         TreeTableView<PackageLine> packagesTable = createPackagesSelectionTable(selectionModel);
         VBox packagesOptionsBox = createPackagesOptions();
 
         HBox content = new HBox(packagesOptionsBox, packagesTable);
+        HBox.setHgrow(packagesTable, Priority.ALWAYS);
         content.setSpacing(DEFAULT_SPACING);
         content.setPadding(new Insets(DEFAULT_SPACING));
         content.setFillHeight(true);
-        setContent(content);
+        box.setContent(content);
+
+        glueToAnchorPane(box);
+        getChildren().add(box);
 
         update();
 
@@ -97,11 +101,9 @@ public class JMadModelPackagesSelectionPane extends TitledPane {
 
     private TreeTableView<PackageLine> createPackagesSelectionTable(ModelPackSelectionState selectionModel) {
         TreeTableColumn<PackageLine, String> packageColumn = new TreeTableColumn<>("Package Name");
-        packageColumn.setPrefWidth(250);
         packageColumn.setCellValueFactory(param -> param.getValue().getValue().packageNameProperty());
 
         TreeTableColumn<PackageLine, String> variantColumn = new TreeTableColumn<>("Variant");
-        variantColumn.setPrefWidth(200);
         variantColumn.setCellValueFactory(param -> param.getValue().getValue().variantProperty());
 
         TreeTableView<PackageLine> packagesTable = new TreeTableView<>(packagesTableRoot);
@@ -116,7 +118,7 @@ public class JMadModelPackagesSelectionPane extends TitledPane {
             return treeItem.getValue().modelPackageVariant;
         }, packagesTable.getSelectionModel().selectedItemProperty()));
 
-        packagesTable.setMinHeight(500);
+        setPercentageWith(packagesTable, ImmutableMap.of(packageColumn, 0.7, variantColumn, 0.3));
         return packagesTable;
     }
 
@@ -153,13 +155,10 @@ public class JMadModelPackagesSelectionPane extends TitledPane {
             return packageVariants.stream().filter(filter).map(PackageLine::new).collect(toList());
         }).filter(not(List::isEmpty))
           .map(variants -> {
-              if(variants.size() == 1) {
-                  return new TreeItem<>(variants.get(0));
-              }
-              TreeItem<PackageLine> folderItem = new TreeItem<>(new PackageLine(variants.get(0).packageName.get()));
-              List<TreeItem<PackageLine>> children = variants.stream().map(TreeItem::new).collect(toList());
-              folderItem.getChildren().setAll(children);
-              return folderItem;
+              TreeItem<PackageLine> item = new TreeItem<>(variants.get(0));
+              List<TreeItem<PackageLine>> children = variants.subList(1, variants.size()).stream().map(TreeItem::new).collect(toList());
+              item.getChildren().setAll(children);
+              return item;
         })
         .collect(toList());
         // @formatter:on

@@ -5,8 +5,10 @@
 package org.jmad.modelpack.gui.panes;
 
 import static java.util.Objects.requireNonNull;
-import static org.jmad.modelpack.gui.panes.FxUtils.onChange;
-import static org.jmad.modelpack.gui.panes.FxUtils.setFontWeight;
+import static org.jmad.modelpack.gui.util.FxUtils.glueToAnchorPane;
+import static org.jmad.modelpack.gui.util.FxUtils.onChange;
+import static org.jmad.modelpack.gui.util.FxUtils.setFontWeight;
+import static org.jmad.modelpack.gui.util.GuiUtils.DEFAULT_SPACING_INSETS;
 
 import cern.accsoft.steering.jmad.domain.machine.RangeDefinition;
 import cern.accsoft.steering.jmad.domain.machine.SequenceDefinition;
@@ -16,11 +18,13 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TitledPane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.FontWeight;
+import org.jmad.modelpack.gui.util.GuiUtils;
 
-public class JMadModelDefinitionSelectionPane extends VBox {
+public class JMadModelDefinitionSelectionPane extends AnchorPane {
 
     private static final double COMBOBOX_MIN_WIDTH = 150;
     private final ModelPackSelectionState selectionModel;
@@ -32,9 +36,16 @@ public class JMadModelDefinitionSelectionPane extends VBox {
     }
 
     private void init() {
-        setSpacing(GuiUtils.DEFAULT_SPACING);
-        getChildren().add(createModelDefinitionPane(selectionModel));
-        getChildren().add(createModelDetailedPane(selectionModel));
+        TitledPane modelDefinitionPane = createModelDefinitionPane(selectionModel);
+        TitledPane modelDetailedPane = createModelDetailedPane(selectionModel);
+        VBox box = new VBox();
+        VBox.setVgrow(modelDefinitionPane, Priority.ALWAYS);
+        box.setFillWidth(true);
+        box.setSpacing(GuiUtils.DEFAULT_SPACING);
+        box.getChildren().addAll(modelDefinitionPane, modelDetailedPane);
+
+        glueToAnchorPane(box);
+        getChildren().add(box);
     }
 
     private static TitledPane createModelDefinitionPane(ModelPackSelectionState selectionModel) {
@@ -44,7 +55,7 @@ public class JMadModelDefinitionSelectionPane extends VBox {
         selectionModel.selectedModelDefinitionProperty()
                 .addListener((p, ov, nv) -> definitionView.getSelectionModel().select(nv));
 
-        definitionView.setMinHeight(200);
+//        definitionView.setMinHeight(200);
         TitledPane definitionPane = new TitledPane("Model Definitions", definitionView);
         setFontWeight(definitionPane, FontWeight.BOLD);
         definitionPane.setCollapsible(false);
@@ -67,14 +78,15 @@ public class JMadModelDefinitionSelectionPane extends VBox {
         pkgSelectionModel.selectedRangeProperty().addListener(onChange(rangeCombo.getSelectionModel()::select));
 
         ListView<OpticsDefinition> opticsDefinitions = new ListView<>();
-        opticsDefinitions.setPrefWidth(300);
+//        opticsDefinitions.setPrefWidth(300);
         opticsDefinitions.itemsProperty().bind(pkgSelectionModel.availableOpticsProperty());
         opticsDefinitions.getSelectionModel().selectedItemProperty()
                 .addListener(onChange(pkgSelectionModel.selectedOpticsProperty()::set));
         pkgSelectionModel.selectedOpticsProperty().addListener(onChange(opticsDefinitions.getSelectionModel()::select));
 
         VBox modelDetailsBox = new VBox();
-        setVgrow(opticsDefinitions, Priority.ALWAYS);
+        VBox.setVgrow(opticsDefinitions, Priority.ALWAYS);
+        modelDetailsBox.setPadding(DEFAULT_SPACING_INSETS);
         modelDetailsBox.getChildren().add(new Label("Sequence:"));
         modelDetailsBox.getChildren().add(sequenceCombo);
         modelDetailsBox.getChildren().add(new Label("Range:"));
@@ -85,7 +97,6 @@ public class JMadModelDefinitionSelectionPane extends VBox {
 
         TitledPane detailPane = new TitledPane();
         setFontWeight(detailPane, FontWeight.BOLD);
-        setVgrow(detailPane, Priority.ALWAYS);
         detailPane.setCollapsible(false);
         detailPane.textProperty().bind(pkgSelectionModel.selectedModelDefinitionProperty().asString());
         detailPane.setContent(modelDetailsBox);

@@ -9,9 +9,11 @@ import static javafx.scene.control.TabPane.TabClosingPolicy.UNAVAILABLE;
 import java.util.Optional;
 
 import javafx.geometry.Insets;
+import javafx.scene.layout.Priority;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.jmad.modelpack.gui.panes.*;
+import org.jmad.modelpack.gui.util.GuiUtils;
 import org.jmad.modelpack.service.JMadModelPackageService;
 import org.jmad.modelpack.service.ModelPackageRepositoryManager;
 import org.jmad.modelpack.service.conf.JMadModelPackageServiceConfiguration;
@@ -63,10 +65,7 @@ public class JMadModelPackageBrowserMain extends Application{
         pane.setSpacing(GuiUtils.DEFAULT_SPACING);
         pane.setAlignment(Pos.TOP_CENTER);
         pane.setFillHeight(true);
-//        pane.heightProperty().addListener((o, ev, nv) -> {
-//            packageBrowser.setPrefHeight(nv.doubleValue());
-//            selectionPane.setPrefHeight(nv.doubleValue());
-//        });
+        HBox.setHgrow(packageBrowser, Priority.ALWAYS);
         return pane;
     }
 
@@ -133,7 +132,6 @@ public class JMadModelPackageBrowserMain extends Application{
             modelDefinitionSelectionDialog.setHeight(700);
             modelDefinitionSelectionDialog.setResizable(true);
             modelDefinitionSelectionDialog.initModality(Modality.NONE);
-           // ScenicView.show(modelDefinitionSelectionDialog.getDialogPane());
             Optional<SelectedModelConfiguration> result = modelDefinitionSelectionDialog.showAndWait();
             if (result.isPresent()) {
                 LOGGER.info("Selected model configuration: {}", result.get());
