@@ -59,7 +59,7 @@ public class PackageFilterModel {
         return showBranches;
     }
 
-    public ObjectProperty<Predicate<ModelPackageVariant>> predicateProperty() {
+    public ObjectProperty<Predicate<ModelPackageVariant>> variantFilterProperty() {
         return predicate;
     }
 

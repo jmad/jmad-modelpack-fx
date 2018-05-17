@@ -57,7 +57,7 @@ public class JMadModelPackageBrowserMain extends Application{
 
     @Bean
     public Node fullSelectionPane(JMadModelPackagesSelectionPane packageBrowser, ModelPackSelectionState jmadModelDefinitionSelectionModel) {
-        JMadModelDefinitionSelectionPane selectionPane = new JMadModelDefinitionSelectionPane(
+        JMadModelDefinitionSelectionControl selectionPane = new JMadModelDefinitionSelectionControl(
                 jmadModelDefinitionSelectionModel);
         HBox pane = new HBox(packageBrowser, selectionPane);
         pane.setFillHeight(true);

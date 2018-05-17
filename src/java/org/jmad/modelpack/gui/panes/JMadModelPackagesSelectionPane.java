@@ -8,6 +8,7 @@ import static com.google.common.base.Predicates.not;
 import static java.util.Comparator.comparing;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
+import static javafx.scene.layout.HBox.setHgrow;
 import static org.jmad.modelpack.gui.util.FxUtils.*;
 import static org.jmad.modelpack.gui.util.GuiUtils.DEFAULT_SPACING;
 
@@ -17,6 +18,7 @@ import java.util.function.Predicate;
 
 import com.google.common.collect.ImmutableMap;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
@@ -31,7 +33,6 @@ import org.jmad.modelpack.service.gitlab.domain.AbstractGitVariant;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.TreeMultimap;
 
-import freetimelabs.io.reactorfx.flux.FxFlux;
 import freetimelabs.io.reactorfx.schedulers.FxSchedulers;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -50,53 +51,48 @@ public class JMadModelPackagesSelectionPane extends AnchorPane {
 
     public JMadModelPackagesSelectionPane(JMadModelPackageService packageService, ModelPackSelectionState selectionModel) {
         this.packageService = requireNonNull(packageService, "packageService must not be null");
-
         map = TreeMultimap.create(comparing(ModelPackage::name), ModelPackages.packageVariantComparator());
         filterModel = new PackageFilterModel();
         packagesTableRoot = new TreeItem<>(new PackageLine());
         refreshButton = new Button("Refresh");
 
-        TitledPane box = new TitledPane();
-        box.setText("Model Packages");
-        box.setCollapsible(false);
-        setFontWeight(box, FontWeight.BOLD);
+        init(selectionModel);
 
-        TreeTableView<PackageLine> packagesTable = createPackagesSelectionTable(selectionModel);
-        VBox packagesOptionsBox = createPackagesOptions();
+        updatePackages();
 
-        HBox content = new HBox(packagesOptionsBox, packagesTable);
-        HBox.setHgrow(packagesTable, Priority.ALWAYS);
-        content.setSpacing(DEFAULT_SPACING);
-        content.setPadding(new Insets(DEFAULT_SPACING));
-        content.setFillHeight(true);
-        box.setContent(content);
+        refreshButton.setOnAction(e -> updatePackages());
 
-        glueToAnchorPane(box);
-        getChildren().add(box);
+        this.filterModel.variantFilterProperty().addListener(onChange(v -> refreshPackages()));
+    }
 
-        update();
+    private void init(ModelPackSelectionState state) {
+        TreeTableView<PackageLine> packagesTable = createPackagesSelectionTable(state);
+        Node packagesOptionsBox = createPackagesOptions();
 
-        // @formatter:off
-        FxFlux.from(refreshButton)
-                .subscribeOn(FxSchedulers.fxThread())
-                .subscribe(o -> this.update());
-        // @formatter:on
+        HBox box = new HBox(packagesOptionsBox, packagesTable);
+        box.setSpacing(DEFAULT_SPACING);
+        box.setPadding(new Insets(DEFAULT_SPACING));
+        box.setFillHeight(true);
+        setHgrow(packagesTable, Priority.ALWAYS);
 
-        this.filterModel.predicateProperty().addListener((p, oldVal, newVal) -> {
-            refreshPackages();
-        });
+        TitledPane titledBox = new TitledPane();
+        titledBox.setText("Model Packages");
+        titledBox.setCollapsible(false);
+        titledBox.setContent(box);
+        setFontWeight(titledBox, FontWeight.BOLD);
+
+        glueToAnchorPane(titledBox);
+        getChildren().add(titledBox);
     }
 
     private VBox createPackagesOptions() {
-        VBox packagesOptionsBox = new VBox();
-        packagesOptionsBox.setSpacing(DEFAULT_SPACING);
-
         TitledPane variantFilters = new TitledPane("Filters", new PackageFilterPane(filterModel));
         variantFilters.setCollapsible(false);
-        packagesOptionsBox.getChildren().add(variantFilters);
 
-        packagesOptionsBox.getChildren().add(refreshButton);
-        return packagesOptionsBox;
+        VBox box = new VBox();
+        box.setSpacing(DEFAULT_SPACING);
+        box.getChildren().addAll(variantFilters, refreshButton);
+        return box;
     }
 
     private TreeTableView<PackageLine> createPackagesSelectionTable(ModelPackSelectionState selectionModel) {
@@ -122,7 +118,7 @@ public class JMadModelPackagesSelectionPane extends AnchorPane {
         return packagesTable;
     }
 
-    private void update() {
+    private void updatePackages() {
         // this.refreshButton.setDisable(true);
         this.clearPackages();
         // @formatter:off
@@ -143,7 +139,7 @@ public class JMadModelPackagesSelectionPane extends AnchorPane {
     }
 
     private void refreshPackages() {
-        List<TreeItem<PackageLine>> treeItems = treeItemsFor(this.map, filterModel.predicateProperty().get());
+        List<TreeItem<PackageLine>> treeItems = treeItemsFor(this.map, filterModel.variantFilterProperty().get());
         this.packagesTableRoot.getChildren().setAll(treeItems);
     }
 
@@ -165,7 +161,6 @@ public class JMadModelPackagesSelectionPane extends AnchorPane {
     }
 
     private static class PackageLine {
-
         private final ModelPackageVariant modelPackageVariant;
         private final StringProperty packageName = new SimpleStringProperty();
         private final StringProperty variant = new SimpleStringProperty();
@@ -181,11 +176,6 @@ public class JMadModelPackagesSelectionPane extends AnchorPane {
                 return variant.getClass().getSimpleName().toLowerCase() + ": " + variant.name();
             }
             return variant.name();
-        }
-
-        private PackageLine(String packageName) {
-            this.modelPackageVariant = null;
-            this.packageName.setValue(packageName);
         }
 
         private PackageLine() {
