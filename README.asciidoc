@@ -1,0 +1,5 @@
+image:https://www.travis-ci.com/jmad/jmad-modelpack-gui.svg?branch=master["Build Status", link="https://www.travis-ci.com/jmad/jmad-modelpack-gui"]
+
+# Graphical User interface on top of the JMad Modelpackage Service
+
+This (Java FX - based) GUI component, provides an all-in-one dialog to select modelpackages from connected repositories and model definitions contained in these packages, to be used later within jmad (or applications using jmad).
