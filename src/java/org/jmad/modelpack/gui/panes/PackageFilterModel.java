@@ -22,8 +22,8 @@ import javafx.beans.property.SimpleObjectProperty;
 public class PackageFilterModel {
 
     private final BooleanProperty showReleases = new SimpleBooleanProperty(true);
-    private final BooleanProperty showTags = new SimpleBooleanProperty(true);
-    private final BooleanProperty showBranches = new SimpleBooleanProperty(true);
+    private final BooleanProperty showTags = new SimpleBooleanProperty(false);
+    private final BooleanProperty showBranches = new SimpleBooleanProperty(false);
 
     private final ObjectProperty<Predicate<ModelPackageVariant>> predicate = new SimpleObjectProperty<>(pv -> true);
     {
