@@ -2,10 +2,16 @@ package org.jmad.modelpack.gui.util;
 
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
@@ -20,6 +26,22 @@ public final class FxUtils {
         definitionPane.setFont(boldFont);
     }
 
+    public static Region createVerticalFiller() {
+        VBox verticalSpacer = new VBox();
+        VBox.setVgrow(verticalSpacer, Priority.ALWAYS);
+        return verticalSpacer;
+    }
+
+    private Region createHorizontalFiller() {
+        HBox verticalSpacer = new HBox();
+        HBox.setHgrow(verticalSpacer, Priority.ALWAYS);
+        return verticalSpacer;
+    }
+
+    public static AnchorPane wrapAndGlueToAnchorPane(Node node) {
+        glueToAnchorPane(node);
+        return new AnchorPane(node);
+    }
 
     public static void glueToAnchorPane(Node node) {
         AnchorPane.setTopAnchor(node, 0.0);
@@ -28,7 +50,24 @@ public final class FxUtils {
         AnchorPane.setRightAnchor(node, 0.0);
     }
 
-    public static void setPercentageWith(TreeTableView<?> table, Map<TreeTableColumn<?, ?>, Double> percentages) {
+    public static void setPercentageWidth(TreeTableView<?> table, Map<TreeTableColumn<?, ?>, Double> percentages) {
+        if(!table.getColumns().containsAll(percentages.keySet())) {
+            throw new IllegalArgumentException("The percentages map must include all the columns of the table");
+        }
+
+        if(percentages.values().stream().mapToDouble(d -> d).sum() != 1.0) {
+            throw new IllegalArgumentException("The sum of the percentages MUST be 1.0");
+        }
+
+        int widthMarginToPreventHorizontalScrollbar = table.getColumns().size() + 1;
+        table.widthProperty().addListener(onChange(width -> percentages.forEach((column, percentage) -> {
+            double processedWidth = width.doubleValue() - widthMarginToPreventHorizontalScrollbar;
+            double columnWidth = Math.floor(processedWidth * percentage);
+            column.setPrefWidth(columnWidth);
+        })));
+    }
+
+    public static void setPercentageWidth(TableView<?> table, Map<TableColumn<?, ?>, Double> percentages) {
         if(!table.getColumns().containsAll(percentages.keySet())) {
             throw new IllegalArgumentException("The percentages map must include all the columns of the table");
         }

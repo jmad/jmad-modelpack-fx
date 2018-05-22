@@ -4,10 +4,15 @@
 
 package org.jmad.modelpack.gui.standalone;
 
-import java.util.Optional;
-
-import org.jmad.modelpack.gui.conf.ModelSelectionDialogConfiguration;
-import org.jmad.modelpack.gui.panes.SelectedModelConfiguration;
+import javafx.application.Application;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
+import org.jmad.modelpack.gui.conf.JMadModelSelectionDialogConfiguration;
+import org.jmad.modelpack.gui.domain.JMadModelSelection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -16,27 +21,21 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import javafx.application.Application;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Dialog;
-import javafx.scene.layout.BorderPane;
-import javafx.stage.Stage;
+import java.util.Optional;
 
 @Configuration
-@Import(value = ModelSelectionDialogConfiguration.class)
+@Import(value = JMadModelSelectionDialogConfiguration.class)
 public class JMadModelPackageBrowserMain extends Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JMadModelPackageBrowserMain.class);
     private static final String MAIN_NODE_NAME = "main_fx_node";
 
     @Bean(MAIN_NODE_NAME)
-    public BorderPane view(Dialog<SelectedModelConfiguration> modelDefinitionSelectionDialog) {
+    public BorderPane view(Dialog<JMadModelSelection> modelDefinitionSelectionDialog) {
         BorderPane pane = new BorderPane();
         Button button = new Button("select model");
         button.setOnAction((evt) -> {
-            Optional<SelectedModelConfiguration> result = modelDefinitionSelectionDialog.showAndWait();
+            Optional<JMadModelSelection> result = modelDefinitionSelectionDialog.showAndWait();
             if (result.isPresent()) {
                 LOGGER.info("Selected model configuration: {}", result.get());
             } else {

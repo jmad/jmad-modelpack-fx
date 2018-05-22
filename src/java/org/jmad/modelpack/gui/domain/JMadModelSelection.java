@@ -2,20 +2,20 @@
  * Copyright (c) 2018 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package org.jmad.modelpack.gui.panes;
-
-import static java.util.Objects.requireNonNull;
+package org.jmad.modelpack.gui.domain;
 
 import cern.accsoft.steering.jmad.model.JMadModelStartupConfiguration;
 import cern.accsoft.steering.jmad.modeldefs.domain.JMadModelDefinition;
 
-public class SelectedModelConfiguration {
+import static java.util.Objects.requireNonNull;
+
+public class JMadModelSelection {
 
     private final JMadModelDefinition modelDefinition;
     private final JMadModelStartupConfiguration startupConfiguration;
 
-    public SelectedModelConfiguration(JMadModelDefinition modelDefinition,
-            JMadModelStartupConfiguration startupConfiguration) {
+    public JMadModelSelection(JMadModelDefinition modelDefinition,
+                              JMadModelStartupConfiguration startupConfiguration) {
         this.modelDefinition = requireNonNull(modelDefinition, "modelDefinition must not be null");
         this.startupConfiguration = requireNonNull(startupConfiguration, "startupConfiguration must not be null");
     }
@@ -48,7 +48,7 @@ public class SelectedModelConfiguration {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        SelectedModelConfiguration other = (SelectedModelConfiguration) obj;
+        JMadModelSelection other = (JMadModelSelection) obj;
         if (modelDefinition == null) {
             if (other.modelDefinition != null) {
                 return false;
@@ -68,7 +68,7 @@ public class SelectedModelConfiguration {
 
     @Override
     public String toString() {
-        return "SelectedModelConfiguration [modelDefinition=" + modelDefinition + ", startupConfiguration="
+        return "JMadModelSelection [modelDefinition=" + modelDefinition + ", startupConfiguration="
                 + startupConfiguration + "]";
     }
 

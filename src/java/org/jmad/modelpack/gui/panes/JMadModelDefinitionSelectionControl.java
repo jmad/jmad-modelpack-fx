@@ -4,12 +4,6 @@
 
 package org.jmad.modelpack.gui.panes;
 
-import static java.util.Objects.requireNonNull;
-import static org.jmad.modelpack.gui.util.FxUtils.glueToAnchorPane;
-import static org.jmad.modelpack.gui.util.FxUtils.onChange;
-import static org.jmad.modelpack.gui.util.FxUtils.setFontWeight;
-import static org.jmad.modelpack.gui.util.GuiUtils.DEFAULT_SPACING_INSETS;
-
 import cern.accsoft.steering.jmad.domain.machine.RangeDefinition;
 import cern.accsoft.steering.jmad.domain.machine.SequenceDefinition;
 import cern.accsoft.steering.jmad.modeldefs.domain.JMadModelDefinition;
@@ -22,7 +16,14 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.FontWeight;
+import org.jmad.modelpack.gui.domain.ModelPackSelectionState;
 import org.jmad.modelpack.gui.util.GuiUtils;
+
+import static java.util.Objects.requireNonNull;
+import static org.jmad.modelpack.gui.util.FxUtils.glueToAnchorPane;
+import static org.jmad.modelpack.gui.util.FxUtils.onChange;
+import static org.jmad.modelpack.gui.util.FxUtils.setFontWeight;
+import static org.jmad.modelpack.gui.util.GuiUtils.DEFAULT_SPACING_INSETS;
 
 public class JMadModelDefinitionSelectionControl extends AnchorPane {
 

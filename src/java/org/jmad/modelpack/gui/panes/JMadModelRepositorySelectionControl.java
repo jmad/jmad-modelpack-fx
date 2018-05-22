@@ -4,19 +4,8 @@
 
 package org.jmad.modelpack.gui.panes;
 
-import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.toList;
-
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-
-import org.jmad.modelpack.domain.ModelPackageRepository;
-import org.jmad.modelpack.service.ModelPackageRepositoryManager;
-import org.jmad.modelpack.service.ModelPackageRepositoryManager.EnableState;
-
 import com.google.common.collect.ImmutableList;
-
+import com.google.common.collect.ImmutableMap;
 import freetimelabs.io.reactorfx.schedulers.FxSchedulers;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -28,15 +17,26 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.layout.BorderPane;
+import org.jmad.modelpack.domain.ModelPackageRepository;
+import org.jmad.modelpack.gui.util.FxUtils;
+import org.jmad.modelpack.service.ModelPackageRepositoryManager;
+import org.jmad.modelpack.service.ModelPackageRepositoryManager.EnableState;
 
-public class ModelRepositoryPane extends BorderPane {
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
+
+public class JMadModelRepositorySelectionControl extends BorderPane {
 
     private final ModelPackageRepositoryManager manager;
-    private final ObservableList<RepoLine> repos = FXCollections.observableArrayList();
 
-    public ModelRepositoryPane(ModelPackageRepositoryManager manager) {
+    public JMadModelRepositorySelectionControl(ModelPackageRepositoryManager manager) {
         this.manager = requireNonNull(manager, "manager must not be null");
 
+        ObservableList<RepoLine> repos = FXCollections.observableArrayList();
         TableView<RepoLine> repositoryView = new TableView<>(repos);
         repositoryView.setEditable(true);
 
@@ -50,9 +50,9 @@ public class ModelRepositoryPane extends BorderPane {
         baseUrlCol.setEditable(false);
         baseUrlCol.setResizable(true);
 
-        baseUrlCol.prefWidthProperty().bind(repositoryView.widthProperty().subtract(enabledCol.widthProperty()));
-
         repositoryView.getColumns().addAll(ImmutableList.of(enabledCol, baseUrlCol));
+
+        FxUtils.setPercentageWidth(repositoryView, ImmutableMap.of(enabledCol, 0.1, baseUrlCol, 0.9));
 
         setCenter(repositoryView);
 
@@ -75,20 +75,19 @@ public class ModelRepositoryPane extends BorderPane {
     }
 
     private class RepoLine {
-
         private final BooleanProperty enabled = new SimpleBooleanProperty();
         private final StringProperty stringRepresentation = new SimpleStringProperty();
 
         private RepoLine(ModelPackageRepository repo, boolean enabled) {
             stringRepresentation.set(repo.toString());
             this.enabled.set(enabled);
-            this.enabled.addListener((obs, o, n) -> {
+            this.enabled.addListener(FxUtils.onChange(n -> {
                 if (n) {
                     manager.enable(repo);
                 } else {
                     manager.disable(repo);
                 }
-            });
+            }));
         }
 
     }

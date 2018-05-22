@@ -2,13 +2,7 @@
  * Copyright (c) 2018 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package org.jmad.modelpack.gui.panes;
-
-import static freetimelabs.io.reactorfx.schedulers.FxSchedulers.fxThread;
-import static javafx.collections.FXCollections.observableArrayList;
-
-import org.jmad.modelpack.domain.ModelPackageVariant;
-import org.jmad.modelpack.service.JMadModelPackageService;
+package org.jmad.modelpack.gui.domain;
 
 import cern.accsoft.steering.jmad.domain.machine.RangeDefinition;
 import cern.accsoft.steering.jmad.domain.machine.SequenceDefinition;
@@ -18,6 +12,11 @@ import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import org.jmad.modelpack.domain.ModelPackageVariant;
+import org.jmad.modelpack.service.JMadModelPackageService;
+
+import static freetimelabs.io.reactorfx.schedulers.FxSchedulers.fxThread;
+import static javafx.collections.FXCollections.observableArrayList;
 
 public class ModelPackSelectionState {
 

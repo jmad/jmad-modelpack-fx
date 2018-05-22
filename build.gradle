@@ -1,3 +1,7 @@
+buildscript {
+    project.ext.CERN_VM = System.getProperty('CERN_TECHNET_VM') ?: System.getenv('CERN_TECHNET_VM') ?: false
+}
+
 plugins {
     id 'java'
     id 'jacoco'
@@ -10,12 +14,20 @@ group = 'jmad'
 sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
-    mavenCentral()
-    maven { url "https://dl.bintray.com/jmad/jmad-repo" }
+    if (CERN_VM) {
+        maven { url 'http://artifactory.cern.ch/ds-jcenter' }
+        maven { url 'http://artifactory.cern.ch/development' }
+    } else {
+        jcenter()
+        maven { url "https://dl.bintray.com/jmad/jmad-repo" }
+    }
 }
 
 dependencies {
     compile group: 'jmad', name: 'jmad-modelpack-service', version: '0.1.0'
+
+    compile group: 'de.jensd', name:'fontawesomefx-fontawesome', version:'4.7.0-5'
+    compile group: 'org.controlsfx', name: 'controlsfx', version: '8.40.14'
 
     compile group: 'org.springframework', name: 'spring-core', version: '5.0.6.RELEASE'
     compile group: 'org.springframework', name: 'spring-context', version: '5.0.6.RELEASE'
