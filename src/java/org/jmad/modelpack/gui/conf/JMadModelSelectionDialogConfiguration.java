@@ -10,7 +10,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 
-import org.jmad.modelpack.gui.dialogs.JMadDialogFactory;
 import org.jmad.modelpack.gui.dialogs.JMadModelSelectionDialog;
 import org.jmad.modelpack.gui.domain.ModelPackSelectionState;
 import org.jmad.modelpack.gui.panes.JMadModelDefinitionSelectionControl;
@@ -21,18 +20,15 @@ import org.jmad.modelpack.service.JMadModelPackageService;
 import org.jmad.modelpack.service.ModelPackageRepositoryManager;
 import org.jmad.modelpack.service.conf.JMadModelPackageServiceConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Lazy;
 
 @Configuration
+@ComponentScan(basePackageClasses = { JMadModelSelectionDialogConfiguration.class })
 @Import(value = JMadModelPackageServiceConfiguration.class)
 public class JMadModelSelectionDialogConfiguration {
-
-    @Bean
-    public JMadDialogFactory jmadDialogFactory() {
-        return new JMadDialogFactory();
-    }
 
     @Bean
     @Lazy

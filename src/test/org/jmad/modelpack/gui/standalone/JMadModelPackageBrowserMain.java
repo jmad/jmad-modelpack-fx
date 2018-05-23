@@ -11,6 +11,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+
+import org.jmad.modelpack.gui.conf.JMadDialogFactory;
 import org.jmad.modelpack.gui.conf.JMadModelSelectionDialogConfiguration;
 import org.jmad.modelpack.gui.domain.JMadModelSelection;
 import org.slf4j.Logger;
@@ -31,11 +33,11 @@ public class JMadModelPackageBrowserMain extends Application {
     private static final String MAIN_NODE_NAME = "main_fx_node";
 
     @Bean(MAIN_NODE_NAME)
-    public BorderPane view(Dialog<JMadModelSelection> modelDefinitionSelectionDialog) {
+    public BorderPane view(JMadDialogFactory factory) {
         BorderPane pane = new BorderPane();
         Button button = new Button("select model");
         button.setOnAction((evt) -> {
-            Optional<JMadModelSelection> result = modelDefinitionSelectionDialog.showAndWait();
+            Optional<JMadModelSelection> result = factory.selectionDialog().showAndWait();
             if (result.isPresent()) {
                 LOGGER.info("Selected model configuration: {}", result.get());
             } else {

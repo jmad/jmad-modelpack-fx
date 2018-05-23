@@ -17,9 +17,19 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 public final class FxUtils {
+
+    private static final AtomicBoolean FX_INITIALIZED = new AtomicBoolean(false);
+
+    public static void ensureFxInitialized() {
+        if (!FX_INITIALIZED.getAndSet(true)) {
+            @SuppressWarnings("unused")
+            JFXPanel jfxPanel = new JFXPanel();
+        }
+    }
 
     public static void setFontWeight(TitledPane definitionPane, FontWeight weight) {
         Font currentFont = definitionPane.getFont();
@@ -39,11 +49,6 @@ public final class FxUtils {
         return verticalSpacer;
     }
 
-    public static void initFxPlatform() {
-        @SuppressWarnings("unused")
-        JFXPanel jfxPanel = new JFXPanel();
-    }
-
     public static AnchorPane wrapAndGlueToAnchorPane(Node node) {
         glueToAnchorPane(node);
         return new AnchorPane(node);
@@ -57,11 +62,11 @@ public final class FxUtils {
     }
 
     public static void setPercentageWidth(TreeTableView<?> table, Map<TreeTableColumn<?, ?>, Double> percentages) {
-        if(!table.getColumns().containsAll(percentages.keySet())) {
+        if (!table.getColumns().containsAll(percentages.keySet())) {
             throw new IllegalArgumentException("The percentages map must include all the columns of the table");
         }
 
-        if(percentages.values().stream().mapToDouble(d -> d).sum() != 1.0) {
+        if (percentages.values().stream().mapToDouble(d -> d).sum() != 1.0) {
             throw new IllegalArgumentException("The sum of the percentages MUST be 1.0");
         }
 
@@ -74,11 +79,11 @@ public final class FxUtils {
     }
 
     public static void setPercentageWidth(TableView<?> table, Map<TableColumn<?, ?>, Double> percentages) {
-        if(!table.getColumns().containsAll(percentages.keySet())) {
+        if (!table.getColumns().containsAll(percentages.keySet())) {
             throw new IllegalArgumentException("The percentages map must include all the columns of the table");
         }
 
-        if(percentages.values().stream().mapToDouble(d -> d).sum() != 1.0) {
+        if (percentages.values().stream().mapToDouble(d -> d).sum() != 1.0) {
             throw new IllegalArgumentException("The sum of the percentages MUST be 1.0");
         }
 
@@ -95,6 +100,6 @@ public final class FxUtils {
     }
 
     private FxUtils() {
-        /* static things*/
+        /* static things */
     }
 }
