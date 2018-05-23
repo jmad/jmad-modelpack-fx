@@ -30,10 +30,12 @@ buildscript {
             maven { url 'http://artifactory.cern.ch/ds-jcenter' }
             maven { url 'http://artifactory.cern.ch/development' }
         } else {
-            jcenter()
+            mavenCentral()
+            /* Repo for gradle-bintray-plugin */
+            maven { url "http://repo.spring.io/plugins-release" }
         }
     }
-    dependencies { classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3' }
+    dependencies { classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0' }
 }
 
 apply plugin: 'java'
@@ -57,7 +59,7 @@ repositories {
         maven { url 'http://artifactory.cern.ch/ds-jcenter' }
         maven { url 'http://artifactory.cern.ch/development' }
     } else {
-        jcenter()
+        mavenCentral()
         maven { url "https://dl.bintray.com/jmad/jmad-repo" }
     }
 }
@@ -66,7 +68,6 @@ dependencies {
     compile group: 'jmad', name: 'jmad-modelpack-service', version: '0.2.0'
     compile group: 'com.google.guava', name: 'guava', version: '25.0-jre'
 
-    compile group: 'de.jensd', name: 'fontawesomefx-fontawesome', version: '4.7.0-5'
     compile group: 'org.controlsfx', name: 'controlsfx', version: '8.40.14'
 
     compile group: 'org.springframework', name: 'spring-core', version: '5.0.6.RELEASE'
