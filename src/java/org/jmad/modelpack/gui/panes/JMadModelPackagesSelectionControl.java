@@ -7,8 +7,6 @@ package org.jmad.modelpack.gui.panes;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.TreeMultimap;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import de.jensd.fx.glyphs.fontawesome.utils.FontAwesomeIconFactory;
 import freetimelabs.io.reactorfx.schedulers.FxSchedulers;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
@@ -32,7 +30,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
+import org.controlsfx.glyphfont.FontAwesome;
+import org.controlsfx.glyphfont.Glyph;
+import org.controlsfx.glyphfont.GlyphFontRegistry;
 import org.jmad.modelpack.domain.ModelPackage;
 import org.jmad.modelpack.domain.ModelPackageVariant;
 import org.jmad.modelpack.domain.ModelPackages;
@@ -239,12 +239,13 @@ public class JMadModelPackagesSelectionControl extends AnchorPane {
     }
 
     private static Button createButtonWithSpinnerGraphics(String name) {
-        Text icon = FontAwesomeIconFactory.get().createIcon(FontAwesomeIcon.SPINNER);
+        Glyph icon = GlyphFontRegistry.font("FontAwesome").create(FontAwesome.Glyph.SPINNER);
         icon.setCacheHint(CacheHint.ROTATE);
-        Button clearCache = new Button(name);
-        clearCache.setGraphic(icon);
-        clearCache.setContentDisplay(ContentDisplay.TEXT_ONLY);
-        return clearCache;
+        Button btn = new Button();
+        btn.setGraphic(icon);
+        btn.setText(name);
+        btn.setContentDisplay(ContentDisplay.TEXT_ONLY);
+        return btn;
     }
 
     private static Animation createRotateAnimation(Node graphics) {

@@ -1,34 +1,73 @@
 buildscript {
     project.ext.CERN_VM = System.getProperty('CERN_TECHNET_VM') ?: System.getenv('CERN_TECHNET_VM') ?: false
+    project.ext.DEPLOYMENT = System.getProperty('deployment') ?: false
+    project.ext.VCS_TAG = System.getProperty('TRAVIS_TAG') ?: System.getenv('TRAVIS_TAG')
+    project.ext.POM = [
+            groupId    : 'jmad',
+            artifactId : 'jmad-modelpack-fx',
+            description: 'JavaFx GUI components for accessing the JMad model package service.'
+    ]
+    project.ext.INFO = [
+            repo            : 'https://github.com/jmad/jmad-modelpack-fx.git',
+            url             : 'https://jmad.github.io/',
+            github          : 'https://github.com/jmad/jmad-modelpack-fx',
+            githubIssues    : 'https://github.com/jmad/jmad-modelpack-fx/issues',
+            licenseNameShort: 'Apache-2.0',
+            licenseName     : 'The Apache License, Version 2.0',
+            licenseUrl      : 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    ]
+    project.ext.BINTRAY = [
+            repo        : 'jmad-repo',
+            name        : 'jmad-modelpack-fx',
+            organization: 'jmad',
+            userName    : System.getProperty('BINTRAY_USER') ?: System.getenv('BINTRAY_USER'),
+            apiToken    : System.getProperty('BINTRAY_API_TOKEN') ?: System.getenv('BINTRAY_API_TOKEN')
+    ]
+
+    repositories {
+        if (CERN_VM) {
+            maven { url 'http://artifactory.cern.ch/gradle-plugins' }
+            maven { url 'http://artifactory.cern.ch/ds-jcenter' }
+            maven { url 'http://artifactory.cern.ch/development' }
+        } else {
+            mavenCentral()
+            /* Repo for gradle-bintray-plugin */
+            maven { url "http://repo.spring.io/plugins-release" }
+        }
+    }
+    dependencies { classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0' }
 }
 
-plugins {
-    id 'java'
-    id 'jacoco'
-    id 'idea'
-    id 'eclipse'
-}
+apply plugin: 'java'
+apply plugin: 'jacoco'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
 
 group = 'jmad'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
+
+if (DEPLOYMENT) {
+    println 'Applying deployment scripts'
+    apply from: './scripts/bintray-deploy.gradle'
+}
 
 repositories {
     if (CERN_VM) {
         maven { url 'http://artifactory.cern.ch/ds-jcenter' }
         maven { url 'http://artifactory.cern.ch/development' }
     } else {
-        jcenter()
+        mavenCentral()
         maven { url "https://dl.bintray.com/jmad/jmad-repo" }
     }
 }
 
 dependencies {
-    compile group: 'jmad', name: 'jmad-modelpack-service', version: '0.1.0'
-    compile group: 'jmad', name: 'jmad-core', version: '0.1.2'
+    compile group: 'jmad', name: 'jmad-modelpack-service', version: '0.2.0'
     compile group: 'com.google.guava', name: 'guava', version: '25.0-jre'
-    
-    compile group: 'de.jensd', name:'fontawesomefx-fontawesome', version:'4.7.0-5'
+
     compile group: 'org.controlsfx', name: 'controlsfx', version: '8.40.14'
 
     compile group: 'org.springframework', name: 'spring-core', version: '5.0.6.RELEASE'
