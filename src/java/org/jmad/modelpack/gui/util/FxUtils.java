@@ -1,6 +1,7 @@
 package org.jmad.modelpack.gui.util;
 
 import javafx.beans.value.ChangeListener;
+import javafx.embed.swing.JFXPanel;
 import javafx.scene.Node;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -36,6 +37,11 @@ public final class FxUtils {
         HBox verticalSpacer = new HBox();
         HBox.setHgrow(verticalSpacer, Priority.ALWAYS);
         return verticalSpacer;
+    }
+
+    public static void initFxPlatform() {
+        @SuppressWarnings("unused")
+        JFXPanel jfxPanel = new JFXPanel();
     }
 
     public static AnchorPane wrapAndGlueToAnchorPane(Node node) {

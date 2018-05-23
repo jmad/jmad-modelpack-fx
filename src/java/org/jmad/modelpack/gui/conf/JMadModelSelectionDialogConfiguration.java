@@ -9,6 +9,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.stage.Modality;
+
+import org.jmad.modelpack.gui.dialogs.JMadDialogFactory;
 import org.jmad.modelpack.gui.dialogs.JMadModelSelectionDialog;
 import org.jmad.modelpack.gui.domain.ModelPackSelectionState;
 import org.jmad.modelpack.gui.panes.JMadModelDefinitionSelectionControl;
@@ -21,32 +23,46 @@ import org.jmad.modelpack.service.conf.JMadModelPackageServiceConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Lazy;
 
 @Configuration
 @Import(value = JMadModelPackageServiceConfiguration.class)
 public class JMadModelSelectionDialogConfiguration {
 
     @Bean
-    public JMadModelSelectionDialog jmadModelSelectionDialog(Region modelSelectionRegion, Region repositorySelectionControl, ModelPackSelectionState selectionState) {
-        JMadModelSelectionDialog dialog = new JMadModelSelectionDialog(modelSelectionRegion, repositorySelectionControl, selectionState);
+    public JMadDialogFactory jmadDialogFactory() {
+        return new JMadDialogFactory();
+    }
+
+    @Bean
+    @Lazy
+    public JMadModelSelectionDialog jmadModelSelectionDialog(Region modelSelectionRegion,
+            Region repositorySelectionControl, ModelPackSelectionState selectionState) {
+        JMadModelSelectionDialog dialog = new JMadModelSelectionDialog(modelSelectionRegion, repositorySelectionControl,
+                selectionState);
         dialog.setResizable(true);
         dialog.initModality(Modality.NONE);
         return dialog;
     }
 
     @Bean
+    @Lazy
     public JMadModelPackagesSelectionControl packagesSelectionControl(JMadModelPackageService packageService,
-                                                            ModelPackSelectionState modelPackSelectionState) {
+            ModelPackSelectionState modelPackSelectionState) {
         return new JMadModelPackagesSelectionControl(packageService, modelPackSelectionState);
     }
 
     @Bean
-    public JMadModelDefinitionSelectionControl definitionSelectionControl(ModelPackSelectionState modelPackSelectionState) {
+    @Lazy
+    public JMadModelDefinitionSelectionControl definitionSelectionControl(
+            ModelPackSelectionState modelPackSelectionState) {
         return new JMadModelDefinitionSelectionControl(modelPackSelectionState);
     }
 
     @Bean
-    public Region modelSelectionRegion(JMadModelPackagesSelectionControl packagesSelectionControl, JMadModelDefinitionSelectionControl definitionSelectionControl) {
+    @Lazy
+    public Region modelSelectionRegion(JMadModelPackagesSelectionControl packagesSelectionControl,
+            JMadModelDefinitionSelectionControl definitionSelectionControl) {
         HBox pane = new HBox(packagesSelectionControl, definitionSelectionControl);
         pane.setFillHeight(true);
         pane.setPadding(GuiUtils.DEFAULT_SPACING_INSETS);
@@ -58,14 +74,15 @@ public class JMadModelSelectionDialogConfiguration {
     }
 
     @Bean
+    @Lazy
     public ModelPackSelectionState modelPackSelectionState(JMadModelPackageService packageService) {
         return new ModelPackSelectionState(packageService);
     }
 
     @Bean
+    @Lazy
     public JMadModelRepositorySelectionControl repositorySelectionControl(ModelPackageRepositoryManager manager) {
         return new JMadModelRepositorySelectionControl(manager);
     }
-
 
 }
