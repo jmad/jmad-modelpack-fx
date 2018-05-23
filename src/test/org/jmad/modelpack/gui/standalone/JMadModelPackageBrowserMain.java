@@ -8,7 +8,6 @@ import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Dialog;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -22,11 +21,13 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportResource;
 
 import java.util.Optional;
 
 @Configuration
 @Import(value = JMadModelSelectionDialogConfiguration.class)
+@ImportResource(locations = "classpath:app-ctx-jmad-service.xml")
 public class JMadModelPackageBrowserMain extends Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JMadModelPackageBrowserMain.class);
