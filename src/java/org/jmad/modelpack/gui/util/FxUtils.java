@@ -1,5 +1,6 @@
 package org.jmad.modelpack.gui.util;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Node;
@@ -28,6 +29,7 @@ public final class FxUtils {
         if (!FX_INITIALIZED.getAndSet(true)) {
             @SuppressWarnings("unused")
             JFXPanel jfxPanel = new JFXPanel();
+            Platform.setImplicitExit(false);
         }
     }
 

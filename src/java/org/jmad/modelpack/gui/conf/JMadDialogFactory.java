@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import javafx.application.Platform;
 import javafx.scene.control.Dialog;
 
-@Component
+@Component("modelpackDialogFactory")
 public class JMadDialogFactory {
 
     public Optional<JMadModelSelection> showAndWaitModelSelection() {
