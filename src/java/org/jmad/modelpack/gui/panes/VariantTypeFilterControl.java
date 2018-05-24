@@ -4,6 +4,17 @@
 
 package org.jmad.modelpack.gui.panes;
 
+import static org.jmad.modelpack.domain.VariantType.BRANCH;
+import static org.jmad.modelpack.domain.VariantType.RELEASE;
+import static org.jmad.modelpack.domain.VariantType.TAG;
+import static org.jmad.modelpack.gui.util.GuiUtils.DEFAULT_SPACING;
+import static org.jmad.modelpack.gui.util.GuiUtils.DEFAULT_SPACING_INSETS;
+
+import java.util.function.Predicate;
+
+import org.jmad.modelpack.domain.ModelPackageVariant;
+import org.jmad.modelpack.domain.VariantType;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.BooleanProperty;
@@ -12,16 +23,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.CheckBox;
 import javafx.scene.layout.VBox;
-import org.jmad.modelpack.domain.ModelPackageVariant;
-import org.jmad.modelpack.domain.Variant;
-import org.jmad.modelpack.service.gitlab.domain.Branch;
-import org.jmad.modelpack.service.gitlab.domain.Release;
-import org.jmad.modelpack.service.gitlab.domain.Tag;
-
-import java.util.function.Predicate;
-
-import static org.jmad.modelpack.gui.util.GuiUtils.DEFAULT_SPACING;
-import static org.jmad.modelpack.gui.util.GuiUtils.DEFAULT_SPACING_INSETS;
 
 public class VariantTypeFilterControl extends VBox {
 
@@ -33,15 +34,14 @@ public class VariantTypeFilterControl extends VBox {
 
     {
         ObjectBinding<Predicate<ModelPackageVariant>> objectBinding = Bindings.createObjectBinding(() -> pv -> {
-            /* order is important as release inherits from tag! */
-            Variant variant = pv.variant();
-            if ((variant instanceof Release) && !showReleases.get()) {
+            VariantType variant = pv.variant().type();
+            if ((RELEASE == variant) && !showReleases.get()) {
                 return false;
             }
-            if (((variant instanceof Tag) && !(variant instanceof Release)) && !showTags.get()) {
+            if ((TAG == variant) && !showTags.get()) {
                 return false;
             }
-            if ((variant instanceof Branch) && !showBranches.get()) {
+            if ((BRANCH == variant) && !showBranches.get()) {
                 return false;
             }
             return true;
