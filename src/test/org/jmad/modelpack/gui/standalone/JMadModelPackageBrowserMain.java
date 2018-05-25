@@ -4,6 +4,7 @@
 
 package org.jmad.modelpack.gui.standalone;
 
+import cern.accsoft.steering.jmad.conf.JMadServiceConfiguration;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -11,8 +12,8 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-import org.jmad.modelpack.gui.conf.JMadDialogFactory;
-import org.jmad.modelpack.gui.conf.JMadModelSelectionDialogConfiguration;
+import org.jmad.modelpack.gui.conf.JMadModelSelectionDialogFactory;
+import org.jmad.modelpack.gui.conf.JMadModelSelectionDialogStandaloneConfiguration;
 import org.jmad.modelpack.gui.domain.JMadModelSelection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,20 +22,18 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.ImportResource;
 
 import java.util.Optional;
 
 @Configuration
-@Import(value = JMadModelSelectionDialogConfiguration.class)
-@ImportResource(locations = "classpath:app-ctx-jmad-service.xml")
+@Import({JMadModelSelectionDialogStandaloneConfiguration.class, JMadServiceConfiguration.class})
 public class JMadModelPackageBrowserMain extends Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JMadModelPackageBrowserMain.class);
     private static final String MAIN_NODE_NAME = "main_fx_node";
 
     @Bean(MAIN_NODE_NAME)
-    public BorderPane view(JMadDialogFactory factory) {
+    public BorderPane view(JMadModelSelectionDialogFactory factory) {
         BorderPane pane = new BorderPane();
         Button button = new Button("select model");
         button.setOnAction((evt) -> {
