@@ -125,7 +125,7 @@ public class JMadModelPackagesSelectionControl extends AnchorPane {
         onlineSwitch.setSelected(state.onlineModeProperty().get());
         onlineSwitch.selectedProperty().addListener(onChange(state.onlineModeProperty()::set));
         onlineSwitch.selectedProperty().addListener(onChange(v -> updatePackages()));
-        
+
         refreshButton.setOnAction(e -> updatePackages());
         clearCacheButton.setOnAction(e -> clearCache());
 
@@ -178,17 +178,11 @@ public class JMadModelPackagesSelectionControl extends AnchorPane {
     }
 
     private void clearCache() {
-        packageService.clearCache()
-                .doOnSubscribe(s -> showLoading())
-                .subscribeOn(FxSchedulers.fxThread())
-                .publishOn(FxSchedulers.fxThread())
-                .timeout(CLEAR_CACHE_TIMEOUT)
-                .doOnError(e -> {
+        packageService.clearCache().doOnSubscribe(s -> showLoading()).subscribeOn(FxSchedulers.fxThread())
+                .publishOn(FxSchedulers.fxThread()).timeout(CLEAR_CACHE_TIMEOUT).doOnError(e -> {
                     LOGGER.error("Error while clearing the service cache", e);
                     hideLoading();
-                })
-                .doOnSuccess(v -> hideLoading())
-                .subscribe();
+                }).doOnSuccess(v -> hideLoading()).subscribe();
     }
 
     private void updatePackages() {
@@ -275,7 +269,7 @@ public class JMadModelPackagesSelectionControl extends AnchorPane {
         }
 
         private static String stringFor(Variant variant) {
-                return variant.type().serializedName() + " " + variant.name();
+            return variant.name() + " [" + variant.type().serializedName() + "]";
         }
 
         private PackageLine() {
