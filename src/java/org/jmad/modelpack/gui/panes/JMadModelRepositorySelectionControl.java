@@ -17,10 +17,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.layout.BorderPane;
-import org.jmad.modelpack.domain.ModelPackageRepository;
+import org.jmad.modelpack.domain.JMadModelPackageRepository;
 import org.jmad.modelpack.gui.util.FxUtils;
-import org.jmad.modelpack.service.ModelPackageRepositoryManager;
-import org.jmad.modelpack.service.ModelPackageRepositoryManager.EnableState;
+import org.jmad.modelpack.service.JMadModelPackageRepositoryManager;
+import org.jmad.modelpack.service.JMadModelPackageRepositoryManager.EnableState;
 
 import java.util.Comparator;
 import java.util.List;
@@ -31,9 +31,9 @@ import static java.util.stream.Collectors.toList;
 
 public class JMadModelRepositorySelectionControl extends BorderPane {
 
-    private final ModelPackageRepositoryManager manager;
+    private final JMadModelPackageRepositoryManager manager;
 
-    public JMadModelRepositorySelectionControl(ModelPackageRepositoryManager manager) {
+    public JMadModelRepositorySelectionControl(JMadModelPackageRepositoryManager manager) {
         this.manager = requireNonNull(manager, "manager must not be null");
 
         ObservableList<RepoLine> repos = FXCollections.observableArrayList();
@@ -65,7 +65,7 @@ public class JMadModelRepositorySelectionControl extends BorderPane {
 
     }
 
-    private List<RepoLine> repoList(Map<ModelPackageRepository, EnableState> m) {
+    private List<RepoLine> repoList(Map<JMadModelPackageRepository, EnableState> m) {
         // @formatter:off
         return m.entrySet().stream()
                 .map(e -> new RepoLine(e.getKey(), e.getValue().asBoolEnabled()))
@@ -78,7 +78,7 @@ public class JMadModelRepositorySelectionControl extends BorderPane {
         private final BooleanProperty enabled = new SimpleBooleanProperty();
         private final StringProperty stringRepresentation = new SimpleStringProperty();
 
-        private RepoLine(ModelPackageRepository repo, boolean enabled) {
+        private RepoLine(JMadModelPackageRepository repo, boolean enabled) {
             stringRepresentation.set(repo.toString());
             this.enabled.set(enabled);
             this.enabled.addListener(FxUtils.onChange(n -> {

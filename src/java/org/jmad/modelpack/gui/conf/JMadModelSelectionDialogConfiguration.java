@@ -17,7 +17,7 @@ import org.jmad.modelpack.gui.panes.JMadModelPackagesSelectionControl;
 import org.jmad.modelpack.gui.panes.JMadModelRepositorySelectionControl;
 import org.jmad.modelpack.gui.util.GuiUtils;
 import org.jmad.modelpack.service.JMadModelPackageService;
-import org.jmad.modelpack.service.ModelPackageRepositoryManager;
+import org.jmad.modelpack.service.JMadModelPackageRepositoryManager;
 import org.jmad.modelpack.service.conf.JMadModelPackageServiceConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -77,7 +77,7 @@ public class JMadModelSelectionDialogConfiguration {
 
     @Bean
     @Lazy
-    public JMadModelRepositorySelectionControl repositorySelectionControl(ModelPackageRepositoryManager manager) {
+    public JMadModelRepositorySelectionControl repositorySelectionControl(JMadModelPackageRepositoryManager manager) {
         return new JMadModelRepositorySelectionControl(manager);
     }
 
