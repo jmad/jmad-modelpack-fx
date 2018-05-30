@@ -17,7 +17,7 @@ import javafx.application.Platform;
 import javafx.scene.control.Dialog;
 
 @Component("modelpackDialogFactory")
-public class JMadDialogFactory {
+public class JMadModelSelectionDialogFactory {
 
     public Optional<JMadModelSelection> showAndWaitModelSelection() {
         Dialog<JMadModelSelection> selectionDialog = selectionDialog();

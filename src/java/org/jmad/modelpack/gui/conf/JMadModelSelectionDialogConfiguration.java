@@ -9,7 +9,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.stage.Modality;
-
 import org.jmad.modelpack.gui.dialogs.JMadModelSelectionDialog;
 import org.jmad.modelpack.gui.domain.ModelPackSelectionState;
 import org.jmad.modelpack.gui.panes.JMadModelDefinitionSelectionControl;
@@ -25,15 +24,19 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Lazy;
 
+/**
+ * Spring configuration that only creates the beans for the jmad-modelpack-gui. It expects all the necessary beans
+ * already in the context. You can use the {@link JMadModelSelectionDialogStandaloneConfiguration} if you want to
+ * have a fully configured, ready-to-use, context.
+ */
 @Configuration
-@ComponentScan(basePackageClasses = { JMadModelSelectionDialogConfiguration.class })
-@Import(value = JMadModelPackageServiceConfiguration.class)
+@ComponentScan(basePackageClasses = {JMadModelSelectionDialogConfiguration.class})
 public class JMadModelSelectionDialogConfiguration {
 
     @Bean
     @Lazy
     public JMadModelSelectionDialog jmadModelSelectionDialog(Region modelSelectionRegion,
-            Region repositorySelectionControl, ModelPackSelectionState selectionState) {
+                                                             Region repositorySelectionControl, ModelPackSelectionState selectionState) {
         JMadModelSelectionDialog dialog = new JMadModelSelectionDialog(modelSelectionRegion, repositorySelectionControl,
                 selectionState);
         dialog.setResizable(true);
@@ -44,7 +47,7 @@ public class JMadModelSelectionDialogConfiguration {
     @Bean
     @Lazy
     public JMadModelPackagesSelectionControl packagesSelectionControl(JMadModelPackageService packageService,
-            ModelPackSelectionState modelPackSelectionState) {
+                                                                      ModelPackSelectionState modelPackSelectionState) {
         return new JMadModelPackagesSelectionControl(packageService, modelPackSelectionState);
     }
 
@@ -58,7 +61,7 @@ public class JMadModelSelectionDialogConfiguration {
     @Bean
     @Lazy
     public Region modelSelectionRegion(JMadModelPackagesSelectionControl packagesSelectionControl,
-            JMadModelDefinitionSelectionControl definitionSelectionControl) {
+                                       JMadModelDefinitionSelectionControl definitionSelectionControl) {
         HBox pane = new HBox(packagesSelectionControl, definitionSelectionControl);
         pane.setFillHeight(true);
         pane.setPadding(GuiUtils.DEFAULT_SPACING_INSETS);
