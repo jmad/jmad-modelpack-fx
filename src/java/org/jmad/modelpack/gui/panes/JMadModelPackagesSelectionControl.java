@@ -236,7 +236,7 @@ public class JMadModelPackagesSelectionControl extends AnchorPane {
         return packages.keySet().stream().map(modelPackage -> {
             Set<ModelPackageVariant> packageVariants = packages.get(modelPackage);
             return packageVariants.stream().filter(filter).map(PackageLine::new).collect(toList());
-        }).filter(not(List::isEmpty))
+        }).filter(pkgLines -> !pkgLines.isEmpty())
           .map(variants -> {
               TreeItem<PackageLine> item = new TreeItem<>(variants.get(0));
               List<TreeItem<PackageLine>> children = variants.subList(1, variants.size()).stream().map(TreeItem::new).collect(toList());
