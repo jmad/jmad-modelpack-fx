@@ -11,12 +11,14 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.jmad.modelpack.gui.domain.JMadModelSelection;
 import org.jmad.modelpack.gui.util.FxUtils;
 import org.springframework.beans.factory.annotation.Lookup;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javafx.application.Platform;
 import javafx.scene.control.Dialog;
 
 @Component("jmadModelSelectionDialogFactory")
+@Lazy
 public class JMadModelSelectionDialogFactory {
 
     public Optional<JMadModelSelection> showAndWaitModelSelection() {
