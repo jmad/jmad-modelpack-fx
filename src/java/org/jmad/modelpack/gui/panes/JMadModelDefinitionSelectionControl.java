@@ -14,10 +14,14 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.FontWeight;
+import org.jmad.modelpack.gui.domain.JMadModelSelectionType;
 import org.jmad.modelpack.gui.domain.ModelPackSelectionState;
 import org.jmad.modelpack.gui.util.GuiUtils;
+
+import java.util.function.Consumer;
 
 import static java.util.Objects.requireNonNull;
 import static org.jmad.modelpack.gui.util.FxUtils.glueToAnchorPane;
@@ -78,16 +82,39 @@ public class JMadModelDefinitionSelectionControl extends AnchorPane {
         opticsDefinitions.getSelectionModel().selectedItemProperty().addListener(onChange(state.selectedOpticsProperty()::set));
         state.selectedOpticsProperty().addListener(onChange(opticsDefinitions.getSelectionModel()::select));
 
+        StackPane sequenceControlContainer = new StackPane();
+        StackPane rangeControlContainer = new StackPane();
+        StackPane opticsDefinitionControlContainer = new StackPane();
+
+        Consumer<JMadModelSelectionType> modelSelectionTypeUpdater = type -> {
+            sequenceControlContainer.getChildren().clear();
+            rangeControlContainer.getChildren().clear();
+            opticsDefinitionControlContainer.getChildren().clear();
+
+            if (type == JMadModelSelectionType.ALL) {
+                sequenceControlContainer.getChildren().add(sequenceCombo);
+                rangeControlContainer.getChildren().add(rangeCombo);
+                opticsDefinitionControlContainer.getChildren().add(opticsDefinitions);
+            } else if(type == JMadModelSelectionType.MODEL_DEFINITION_ONLY) {
+                sequenceControlContainer.getChildren().add(new Label("ALL"));
+                rangeControlContainer.getChildren().add(new Label("ALL"));
+                opticsDefinitionControlContainer.getChildren().add(new Label("ALL"));
+            }
+        };
+
+        state.modelSelectionTypeProperty().addListener(onChange(modelSelectionTypeUpdater));
+        modelSelectionTypeUpdater.accept(state.modelSelectionTypeProperty().get());
+
         VBox box = new VBox();
         box.setPadding(DEFAULT_SPACING_INSETS);
         box.setFillWidth(true);
         VBox.setVgrow(opticsDefinitions, Priority.ALWAYS);
         box.getChildren().add(new Label("Sequence:"));
-        box.getChildren().add(sequenceCombo);
+        box.getChildren().add(sequenceControlContainer);
         box.getChildren().add(new Label("Range:"));
-        box.getChildren().add(rangeCombo);
+        box.getChildren().add(rangeControlContainer);
         box.getChildren().add(new Label("Optics:"));
-        box.getChildren().add(opticsDefinitions);
+        box.getChildren().add(opticsDefinitionControlContainer);
 
         TitledPane titlePane = new TitledPane();
         titlePane.setCollapsible(false);
@@ -95,6 +122,10 @@ public class JMadModelDefinitionSelectionControl extends AnchorPane {
         titlePane.setContent(box);
         setFontWeight(titlePane, FontWeight.BOLD);
         return titlePane;
+    }
+
+    private void updateModelSelectionType(JMadModelSelectionType type) {
+
     }
 
 }

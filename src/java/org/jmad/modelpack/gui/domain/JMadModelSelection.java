@@ -7,6 +7,8 @@ package org.jmad.modelpack.gui.domain;
 import cern.accsoft.steering.jmad.model.JMadModelStartupConfiguration;
 import cern.accsoft.steering.jmad.modeldefs.domain.JMadModelDefinition;
 
+import java.util.Optional;
+
 import static java.util.Objects.requireNonNull;
 
 public class JMadModelSelection {
@@ -14,18 +16,22 @@ public class JMadModelSelection {
     private final JMadModelDefinition modelDefinition;
     private final JMadModelStartupConfiguration startupConfiguration;
 
+    public JMadModelSelection(JMadModelDefinition modelDefinition) {
+        this(modelDefinition, null);
+    }
+
     public JMadModelSelection(JMadModelDefinition modelDefinition,
                               JMadModelStartupConfiguration startupConfiguration) {
         this.modelDefinition = requireNonNull(modelDefinition, "modelDefinition must not be null");
-        this.startupConfiguration = requireNonNull(startupConfiguration, "startupConfiguration must not be null");
+        this.startupConfiguration = startupConfiguration;
     }
 
     public JMadModelDefinition modelDefinition() {
         return modelDefinition;
     }
 
-    public JMadModelStartupConfiguration startupConfiguration() {
-        return startupConfiguration;
+    public Optional<JMadModelStartupConfiguration> startupConfiguration() {
+        return Optional.ofNullable(startupConfiguration);
     }
 
     @Override

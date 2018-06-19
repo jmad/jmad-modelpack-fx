@@ -42,6 +42,8 @@ public class ModelPackSelectionState {
     private final ListProperty<RangeDefinition> availableRanges = new SimpleListProperty<>(observableArrayList());
     private final ObjectProperty<RangeDefinition> selectedRange = new SimpleObjectProperty<>();
 
+    private final ObjectProperty<JMadModelSelectionType> modelSelectionType = new SimpleObjectProperty<>(JMadModelSelectionType.ALL);
+
     private final BooleanProperty onlineMode = new SimpleBooleanProperty(true);
 
     public ModelPackSelectionState(JMadModelPackageService modelPackageService) {
@@ -129,4 +131,7 @@ public class ModelPackSelectionState {
         return onlineMode;
     }
 
+    public ObjectProperty<JMadModelSelectionType> modelSelectionTypeProperty() {
+        return modelSelectionType;
+    }
 }

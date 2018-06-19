@@ -15,6 +15,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.Region;
 import org.jmad.modelpack.gui.domain.JMadModelSelection;
+import org.jmad.modelpack.gui.domain.JMadModelSelectionType;
 import org.jmad.modelpack.gui.domain.ModelPackSelectionState;
 import org.jmad.modelpack.gui.util.GuiUtils;
 
@@ -22,8 +23,11 @@ import static javafx.scene.control.TabPane.TabClosingPolicy.UNAVAILABLE;
 
 public class JMadModelSelectionDialog extends Dialog<JMadModelSelection> {
 
+    private final ModelPackSelectionState selectionState;
+
     public JMadModelSelectionDialog(Region modelSelectionRegion, Region repositorySelectionRegion,
                                     ModelPackSelectionState selectionState) {
+        this.selectionState = selectionState;
         TabPane tabPane = new TabPane();
         tabPane.setTabClosingPolicy(UNAVAILABLE);
         tabPane.getTabs().add(new Tab("Available models", modelSelectionRegion));
@@ -53,15 +57,27 @@ public class JMadModelSelectionDialog extends Dialog<JMadModelSelection> {
                 return null;
             }
 
-            OpticsDefinition opticsDefinition = selectionState.selectedOpticsProperty().get();
-            RangeDefinition rangeDefinition = selectionState.selectedRangeProperty().get();
+            if(selectionState.modelSelectionTypeProperty().get() == JMadModelSelectionType.MODEL_DEFINITION_ONLY) {
+                return new JMadModelSelection(modelDefinition);
+            }
 
-            JMadModelStartupConfiguration startupConfiguration = new JMadModelStartupConfiguration();
-            startupConfiguration.setInitialOpticsDefinition(opticsDefinition);
-            startupConfiguration.setInitialRangeDefinition(rangeDefinition);
+            if(selectionState.modelSelectionTypeProperty().get() == JMadModelSelectionType.ALL) {
+                OpticsDefinition opticsDefinition = selectionState.selectedOpticsProperty().get();
+                RangeDefinition rangeDefinition = selectionState.selectedRangeProperty().get();
 
-            return new JMadModelSelection(modelDefinition, startupConfiguration);
+                JMadModelStartupConfiguration startupConfiguration = new JMadModelStartupConfiguration();
+                startupConfiguration.setInitialOpticsDefinition(opticsDefinition);
+                startupConfiguration.setInitialRangeDefinition(rangeDefinition);
+
+                return new JMadModelSelection(modelDefinition, startupConfiguration);
+            }
+
+            throw new IllegalStateException("Invalid model selection type");
         });
+    }
+
+    public void setModelSelectionType(JMadModelSelectionType type) {
+        selectionState.modelSelectionTypeProperty().set(type);
     }
 
 }

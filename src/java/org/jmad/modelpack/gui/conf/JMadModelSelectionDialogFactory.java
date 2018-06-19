@@ -8,7 +8,9 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.jmad.modelpack.gui.dialogs.JMadModelSelectionDialog;
 import org.jmad.modelpack.gui.domain.JMadModelSelection;
+import org.jmad.modelpack.gui.domain.JMadModelSelectionType;
 import org.jmad.modelpack.gui.util.FxUtils;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.context.annotation.Lazy;
@@ -22,16 +24,21 @@ import javafx.scene.control.Dialog;
 public class JMadModelSelectionDialogFactory {
 
     public Optional<JMadModelSelection> showAndWaitModelSelection() {
-        Dialog<JMadModelSelection> selectionDialog = selectionDialog();
+        return showAndWaitModelSelection(JMadModelSelectionType.ALL);
+    }
+
+    public Optional<JMadModelSelection> showAndWaitModelSelection(JMadModelSelectionType selectionType) {
+        JMadModelSelectionDialog selectionDialog = selectionDialog();
+        selectionDialog.setModelSelectionType(selectionType);
         selectionDialog.setWidth(1000);
         selectionDialog.setHeight(700);
         return selectionDialog.showAndWait();
     }
 
-    public Dialog<JMadModelSelection> selectionDialog() {
+    private JMadModelSelectionDialog selectionDialog() {
         FxUtils.ensureFxInitialized();
 
-        AtomicReference<Dialog<JMadModelSelection>> dialog = new AtomicReference<>();
+        AtomicReference<JMadModelSelectionDialog> dialog = new AtomicReference<>();
 
         if (Platform.isFxApplicationThread()) {
             return jmadModelSelectionDialog();
@@ -52,7 +59,7 @@ public class JMadModelSelectionDialogFactory {
     }
 
     @Lookup
-    protected Dialog<JMadModelSelection> jmadModelSelectionDialog() {
+    protected JMadModelSelectionDialog jmadModelSelectionDialog() {
         return null;
     }
 
