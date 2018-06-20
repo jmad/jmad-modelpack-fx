@@ -18,6 +18,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -43,6 +44,27 @@ public final class FxUtils {
         VBox verticalSpacer = new VBox();
         VBox.setVgrow(verticalSpacer, Priority.ALWAYS);
         return verticalSpacer;
+    }
+
+    public static void runSyncOnFxThread(Runnable task) {
+        ensureFxInitialized();
+
+        if(Platform.isFxApplicationThread()) {
+            task.run();
+            return;
+        }
+
+        CountDownLatch sync = new CountDownLatch(1);
+        Platform.runLater(() -> {
+            task.run();
+            sync.countDown();
+        });
+
+        try {
+            sync.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Interrupted while waiting Fx thread to run task", e);
+        }
     }
 
     private Region createHorizontalFiller() {

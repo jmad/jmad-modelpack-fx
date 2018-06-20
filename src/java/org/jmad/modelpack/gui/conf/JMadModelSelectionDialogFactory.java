@@ -16,46 +16,29 @@ import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import javafx.application.Platform;
-import javafx.scene.control.Dialog;
-
 @Component("jmadModelSelectionDialogFactory")
 @Lazy
 public class JMadModelSelectionDialogFactory {
+
+    private static final int MODELPACK_DIALOG_WIDTH = 1000;
+    private static final int MODELPACK_DIALOG_HEIGHT = 700;
 
     public Optional<JMadModelSelection> showAndWaitModelSelection() {
         return showAndWaitModelSelection(JMadModelSelectionType.ALL);
     }
 
     public Optional<JMadModelSelection> showAndWaitModelSelection(JMadModelSelectionType selectionType) {
-        JMadModelSelectionDialog selectionDialog = selectionDialog();
-        selectionDialog.setModelSelectionType(selectionType);
-        selectionDialog.setWidth(1000);
-        selectionDialog.setHeight(700);
-        return selectionDialog.showAndWait();
-    }
+        AtomicReference<Optional<JMadModelSelection>> userSelection = new AtomicReference<>();
 
-    private JMadModelSelectionDialog selectionDialog() {
-        FxUtils.ensureFxInitialized();
+        FxUtils.runSyncOnFxThread(() -> {
+            JMadModelSelectionDialog selectionDialog = jmadModelSelectionDialog();
+            selectionDialog.setModelSelectionType(selectionType);
+            selectionDialog.setWidth(MODELPACK_DIALOG_WIDTH);
+            selectionDialog.setHeight(MODELPACK_DIALOG_HEIGHT);
+            userSelection.set(selectionDialog.showAndWait());
+        });
 
-        AtomicReference<JMadModelSelectionDialog> dialog = new AtomicReference<>();
-
-        if (Platform.isFxApplicationThread()) {
-            return jmadModelSelectionDialog();
-        } else {
-            CountDownLatch latch = new CountDownLatch(1);
-            Platform.runLater(() -> {
-                dialog.set(jmadModelSelectionDialog());
-                latch.countDown();
-            });
-
-            try {
-                latch.await();
-            } catch (InterruptedException e) {
-                throw new RuntimeException("waiting for latch was interrupted.");
-            }
-            return dialog.get();
-        }
+        return userSelection.get();
     }
 
     @Lookup
