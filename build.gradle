@@ -68,7 +68,11 @@ dependencies {
     compile group: 'jmad', name: 'jmad-modelpack-service', version: '0.2.3'
     compile group: 'com.google.guava', name: 'guava', version: '19.0'
 
-    compile group: 'org.controlsfx', name: 'controlsfx', version: '8.40.14'
+    if(JavaVersion.current() <= JavaVersion.VERSION_1_8){
+        compile group: 'org.controlsfx', name: 'controlsfx', version: '8.40.14'
+    } else {
+        compile group: 'org.controlsfx', name: 'controlsfx', version: '9.0.0'
+    }
 
     compile group: 'org.springframework', name: 'spring-core', version: '4.3.13.RELEASE'
     compile group: 'org.springframework', name: 'spring-context', version: '4.3.13.RELEASE'
