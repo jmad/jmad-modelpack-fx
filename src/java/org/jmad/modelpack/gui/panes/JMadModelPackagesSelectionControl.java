@@ -4,27 +4,25 @@
 
 package org.jmad.modelpack.gui.panes;
 
-import static com.google.common.base.Predicates.not;
-import static java.util.Comparator.comparing;
-import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.toList;
-import static javafx.scene.layout.HBox.setHgrow;
-import static org.jmad.modelpack.gui.util.FxUtils.glueToAnchorPane;
-import static org.jmad.modelpack.gui.util.FxUtils.onChange;
-import static org.jmad.modelpack.gui.util.FxUtils.setFontWeight;
-import static org.jmad.modelpack.gui.util.FxUtils.setPercentageWidth;
-import static org.jmad.modelpack.gui.util.FxUtils.wrapAndGlueToAnchorPane;
-import static org.jmad.modelpack.gui.util.GuiUtils.DEFAULT_SPACING;
-
-import java.time.Duration;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Predicate;
-
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.SetMultimap;
+import com.google.common.collect.TreeMultimap;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
+import javafx.scene.control.TitledPane;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.FontWeight;
 import org.controlsfx.control.ToggleSwitch;
-import org.controlsfx.glyphfont.FontAwesome;
-import org.controlsfx.glyphfont.Glyph;
-import org.controlsfx.glyphfont.GlyphFontRegistry;
 import org.jmad.modelpack.domain.ModelPackage;
 import org.jmad.modelpack.domain.ModelPackageVariant;
 import org.jmad.modelpack.domain.ModelPackages;
@@ -35,86 +33,61 @@ import org.jmad.modelpack.service.JMadModelPackageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.SetMultimap;
-import com.google.common.collect.TreeMultimap;
+import java.time.Duration;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
 
-import freetimelabs.io.reactorfx.schedulers.FxSchedulers;
-import javafx.animation.Animation;
-import javafx.animation.Interpolator;
-import javafx.animation.RotateTransition;
-import javafx.animation.Timeline;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.geometry.Insets;
-import javafx.scene.CacheHint;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeTableColumn;
-import javafx.scene.control.TreeTableView;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.FontWeight;
+import static freetimelabs.io.reactorfx.schedulers.FxSchedulers.fxThread;
+import static java.util.Comparator.comparing;
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
+import static javafx.scene.layout.HBox.setHgrow;
+import static org.jmad.modelpack.gui.util.FxUtils.glueToAnchorPane;
+import static org.jmad.modelpack.gui.util.FxUtils.onChange;
+import static org.jmad.modelpack.gui.util.FxUtils.setPercentageWidth;
+import static org.jmad.modelpack.gui.util.FxUtils.wrapAndGlueToAnchorPane;
+import static org.jmad.modelpack.gui.util.GuiUtils.DEFAULT_SPACING;
 
 public class JMadModelPackagesSelectionControl extends AnchorPane {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JMadModelPackagesSelectionControl.class);
     private static final Duration AVAILABLE_PACKAGES_REFRESH_TIMEOUT = Duration.ofSeconds(30);
     private static final Duration CLEAR_CACHE_TIMEOUT = Duration.ofSeconds(30);
-    private static final int REFRESH_ANIMATION_MS = 600;
     private static final int OPTIONS_PANE_PREF_WIDTH = 120;
 
     private final JMadModelPackageService packageService;
+    private final ModelPackSelectionState state;
 
     private final VariantTypeFilterControl filterControl;
     private final TreeItem<PackageLine> packagesTableRoot;
     private final SetMultimap<ModelPackage, ModelPackageVariant> map;
-    private final Region optionsPane;
-    private final Region loadingPane;
-    private final Animation loadingAnimation;
+    private final SectionPane contentPane;
 
     public JMadModelPackagesSelectionControl(JMadModelPackageService packageService, ModelPackSelectionState state) {
         this.packageService = requireNonNull(packageService, "packageService must not be null");
+        this.state = requireNonNull(state, "modelpack selection state must not be null");
         map = TreeMultimap.create(comparing(ModelPackage::name), ModelPackages.packageVariantComparator());
         filterControl = new VariantTypeFilterControl();
         packagesTableRoot = new TreeItem<>(new PackageLine());
 
-        optionsPane = createPackagesOptionsPane(state);
-        loadingPane = createLoadingPane();
-        loadingAnimation = createRotateAnimation(loadingPane);
-
-        init(state);
-
-        updatePackages();
-
-        this.filterControl.variantFilterProperty().addListener(onChange(v -> updatePackagesTableView()));
-    }
-
-    private void init(ModelPackSelectionState state) {
+        Region optionsPane = createPackagesOptionsPane(state);
         TreeTableView<PackageLine> packagesTable = createPackagesSelectionTable(state);
 
-        HBox box = new HBox(new StackPane(optionsPane, loadingPane), packagesTable);
+        HBox box = new HBox(optionsPane, packagesTable);
         box.setSpacing(DEFAULT_SPACING);
         box.setPadding(new Insets(DEFAULT_SPACING));
         box.setFillHeight(true);
         setHgrow(packagesTable, Priority.ALWAYS);
 
-        TitledPane titledBox = new TitledPane();
-        titledBox.setText("Model Packages");
-        titledBox.setCollapsible(false);
-        titledBox.setContent(box);
-        setFontWeight(titledBox, FontWeight.BOLD);
+        contentPane = new SectionPane("Model Packages");
+        contentPane.setContent(box);
+        glueToAnchorPane(contentPane);
+        getChildren().add(contentPane);
 
-        glueToAnchorPane(titledBox);
-        getChildren().add(titledBox);
+        updatePackages();
+
+        this.filterControl.variantFilterProperty().addListener(onChange(v -> updatePackagesTableView()));
     }
 
     private VBox createPackagesOptionsPane(ModelPackSelectionState state) {
@@ -146,14 +119,6 @@ public class JMadModelPackagesSelectionControl extends AnchorPane {
         return box;
     }
 
-    private static Glyph createLoadingPane() {
-        Glyph loadingPane = GlyphFontRegistry.font("FontAwesome").create(FontAwesome.Glyph.SPINNER);
-        loadingPane.setCacheHint(CacheHint.ROTATE);
-        loadingPane.setFontSize(OPTIONS_PANE_PREF_WIDTH * 0.2);
-        loadingPane.setColor(Color.GRAY);
-        return loadingPane;
-    }
-
     private TreeTableView<PackageLine> createPackagesSelectionTable(ModelPackSelectionState selectionModel) {
         TreeTableColumn<PackageLine, String> packageColumn = new TreeTableColumn<>("Package Name");
         packageColumn.setCellValueFactory(param -> param.getValue().getValue().packageNameProperty());
@@ -178,11 +143,11 @@ public class JMadModelPackagesSelectionControl extends AnchorPane {
     }
 
     private void clearCache() {
-        packageService.clearCache().doOnSubscribe(s -> showLoading()).subscribeOn(FxSchedulers.fxThread())
-                .publishOn(FxSchedulers.fxThread()).timeout(CLEAR_CACHE_TIMEOUT).doOnError(e -> {
+        packageService.clearCache().doOnSubscribe(s -> showLoading()).subscribeOn(fxThread())
+                .publishOn(fxThread()).timeout(CLEAR_CACHE_TIMEOUT).doOnError(e -> {
                     LOGGER.error("Error while clearing the service cache", e);
-                    hideLoading();
-                }).doOnSuccess(v -> hideLoading()).subscribe();
+            hideLoading();
+        }).doOnSuccess(v -> hideLoading()).subscribe();
     }
 
     private void updatePackages() {
@@ -191,8 +156,8 @@ public class JMadModelPackagesSelectionControl extends AnchorPane {
         // @formatter:off
         this.packageService.availablePackages()
                 .doOnSubscribe(s -> showLoading())
-                .publishOn(FxSchedulers.fxThread())
-                .subscribeOn(FxSchedulers.fxThread())
+                .publishOn(fxThread())
+                .subscribeOn(fxThread())
                 .timeout(AVAILABLE_PACKAGES_REFRESH_TIMEOUT)
                 .doOnComplete(this::hideLoading)
                 .doOnError(e -> {
@@ -204,15 +169,13 @@ public class JMadModelPackagesSelectionControl extends AnchorPane {
     }
 
     private void hideLoading() {
-        loadingAnimation.stop();
-        loadingPane.setVisible(false);
-        optionsPane.setDisable(false);
+        state.loadingProperty().set(false);
+        contentPane.hideLoading();
     }
 
     private void showLoading() {
-        optionsPane.setDisable(true);
-        loadingPane.setVisible(true);
-        loadingAnimation.playFromStart();
+        state.loadingProperty().set(true);
+        contentPane.showLoading();
     }
 
     private void addPackage(ModelPackageVariant line) {
@@ -245,15 +208,6 @@ public class JMadModelPackagesSelectionControl extends AnchorPane {
         })
         .collect(toList());
         // @formatter:on
-    }
-
-    private static Animation createRotateAnimation(Node graphics) {
-        RotateTransition transition = new RotateTransition(javafx.util.Duration.millis(REFRESH_ANIMATION_MS), graphics);
-        transition.setFromAngle(0);
-        transition.setToAngle(360);
-        transition.setCycleCount(Timeline.INDEFINITE);
-        transition.setInterpolator(Interpolator.LINEAR);
-        return transition;
     }
 
     private static class PackageLine {

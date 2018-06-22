@@ -14,16 +14,14 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
-
-import static org.jmad.modelpack.service.JMadModelPackageService.Mode.OFFLINE;
-import static org.jmad.modelpack.service.JMadModelPackageService.Mode.ONLINE;
-
 import org.jmad.modelpack.domain.ModelPackageVariant;
 import org.jmad.modelpack.service.JMadModelPackageService;
-import org.jmad.modelpack.service.JMadModelPackageService.Mode;
 
 import static freetimelabs.io.reactorfx.schedulers.FxSchedulers.fxThread;
 import static javafx.collections.FXCollections.observableArrayList;
+import static org.jmad.modelpack.gui.util.FxUtils.onChange;
+import static org.jmad.modelpack.service.JMadModelPackageService.Mode.OFFLINE;
+import static org.jmad.modelpack.service.JMadModelPackageService.Mode.ONLINE;
 
 public class ModelPackSelectionState {
 
@@ -46,26 +44,33 @@ public class ModelPackSelectionState {
 
     private final BooleanProperty onlineMode = new SimpleBooleanProperty(true);
 
+    private final BooleanProperty loading = new SimpleBooleanProperty(false);
+
     public ModelPackSelectionState(JMadModelPackageService modelPackageService) {
-        selectedPackage.addListener((p, ov, nv) -> {
-            if (nv != null) {
-                modelPackageService.modelDefinitionsFrom(nv).collectList().publishOn(fxThread()).subscribe(defs -> {
-                    availableDefinitions.setAll(defs);
-                    if (!defs.isEmpty()) {
-                        JMadModelDefinition selectedModelDef = defs.get(0);
-                        update(selectedModelDef);
-                    }
-                });
+        selectedPackage.addListener(onChange(newSelectedPackage -> {
+            if (newSelectedPackage == null) {
+                return;
             }
-        });
-        
+            modelPackageService.modelDefinitionsFrom(newSelectedPackage).collectList()
+                    .publishOn(fxThread())
+                    .doOnSubscribe(s -> loading.set(true))
+                    .doOnTerminate(() -> loading.set(false))
+                    .subscribe(defs -> {
+                        availableDefinitions.setAll(defs);
+                        if (!defs.isEmpty()) {
+                            JMadModelDefinition selectedModelDef = defs.get(0);
+                            updateSelectedModelDefinition(selectedModelDef);
+                        }
+                    });
+        }));
+
         onlineMode.set(modelPackageService.mode() == ONLINE);
-        onlineMode.addListener((p, ov, nv) -> modelPackageService.setMode(nv ? ONLINE : OFFLINE));
+        onlineMode.addListener(onChange(isOnline -> modelPackageService.setMode(isOnline ? ONLINE : OFFLINE)));
         
-        selectedModelDefinition.addListener((p, ov, nv) -> update(nv));
+        selectedModelDefinition.addListener(onChange(this::updateSelectedModelDefinition));
     }
 
-    private void update(JMadModelDefinition selectedModelDef) {
+    private void updateSelectedModelDefinition(JMadModelDefinition selectedModelDef) {
         selectedModelDefinitionProperty().set(selectedModelDef);
 
         if (selectedModelDef == null) {
@@ -73,13 +78,13 @@ public class ModelPackSelectionState {
         }
 
         availableOpticsProperty().setAll(selectedModelDef.getOpticsDefinitions());
-        update(selectedModelDef.getDefaultOpticsDefinition());
+        updateOpticsDefinition(selectedModelDef.getDefaultOpticsDefinition());
 
         availableSequencesProperty().setAll(selectedModelDef.getSequenceDefinitions());
-        update(selectedModelDef.getDefaultSequenceDefinition());
+        updateSequenceDefinition(selectedModelDef.getDefaultSequenceDefinition());
     }
 
-    private void update(SequenceDefinition sequenceDefinition) {
+    private void updateSequenceDefinition(SequenceDefinition sequenceDefinition) {
         selectedSequenceProperty().set(sequenceDefinition);
         if (sequenceDefinition != null) {
             availableRangesProperty().setAll(sequenceDefinition.getRangeDefinitions());
@@ -87,7 +92,7 @@ public class ModelPackSelectionState {
         }
     }
 
-    private void update(OpticsDefinition opticsDefinition) {
+    private void updateOpticsDefinition(OpticsDefinition opticsDefinition) {
         selectedOpticsProperty().set(opticsDefinition);
     }
 
@@ -129,6 +134,10 @@ public class ModelPackSelectionState {
     
     public BooleanProperty onlineModeProperty() {
         return onlineMode;
+    }
+
+    public BooleanProperty loadingProperty() {
+        return loading;
     }
 
     public ObjectProperty<JMadModelSelectionType> modelSelectionTypeProperty() {

@@ -11,12 +11,10 @@ import cern.accsoft.steering.jmad.modeldefs.domain.OpticsDefinition;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.FontWeight;
 import org.jmad.modelpack.gui.domain.JMadModelSelectionType;
 import org.jmad.modelpack.gui.domain.ModelPackSelectionState;
 import org.jmad.modelpack.gui.util.GuiUtils;
@@ -26,7 +24,6 @@ import java.util.function.Consumer;
 import static java.util.Objects.requireNonNull;
 import static org.jmad.modelpack.gui.util.FxUtils.glueToAnchorPane;
 import static org.jmad.modelpack.gui.util.FxUtils.onChange;
-import static org.jmad.modelpack.gui.util.FxUtils.setFontWeight;
 import static org.jmad.modelpack.gui.util.GuiUtils.DEFAULT_SPACING_INSETS;
 
 public class JMadModelDefinitionSelectionControl extends AnchorPane {
@@ -40,8 +37,13 @@ public class JMadModelDefinitionSelectionControl extends AnchorPane {
     }
 
     private void init() {
-        TitledPane modelDefinitionPane = createModelDefinitionPane(state);
-        TitledPane opticsPane = createOpticsPane(state);
+        SectionPane modelDefinitionPane = createModelDefinitionPane(state);
+        SectionPane opticsPane = createOpticsPane(state);
+
+        state.loadingProperty().addListener(onChange(loading -> {
+            modelDefinitionPane.loadingOverlayProperty().set(loading);
+            opticsPane.loadingOverlayProperty().set(loading);
+        }));
 
         VBox box = new VBox();
         box.setFillWidth(true);
@@ -53,18 +55,17 @@ public class JMadModelDefinitionSelectionControl extends AnchorPane {
         getChildren().add(box);
     }
 
-    private static TitledPane createModelDefinitionPane(ModelPackSelectionState state) {
+    private static SectionPane createModelDefinitionPane(ModelPackSelectionState state) {
         ListView<JMadModelDefinition> definitionView = new ListView<>(state.availableDefinitionsProperty());
         definitionView.getSelectionModel().selectedItemProperty().addListener(onChange(state.selectedModelDefinitionProperty()::set));
         state.selectedModelDefinitionProperty().addListener(onChange(definitionView.getSelectionModel()::select));
 
-        TitledPane definitionPane = new TitledPane("Model Definitions", definitionView);
-        definitionPane.setCollapsible(false);
-        setFontWeight(definitionPane, FontWeight.BOLD);
-        return definitionPane;
+        SectionPane sectionPane = new SectionPane("Model Definitions");
+        sectionPane.setContent(definitionView);
+        return sectionPane;
     }
 
-    private static TitledPane createOpticsPane(ModelPackSelectionState state) {
+    private static SectionPane createOpticsPane(ModelPackSelectionState state) {
         ComboBox<SequenceDefinition> sequenceCombo = new ComboBox<>();
         sequenceCombo.setMinWidth(COMBOBOX_MIN_WIDTH);
         sequenceCombo.itemsProperty().bind(state.availableSequencesProperty());
@@ -116,16 +117,10 @@ public class JMadModelDefinitionSelectionControl extends AnchorPane {
         box.getChildren().add(new Label("Optics:"));
         box.getChildren().add(opticsDefinitionControlContainer);
 
-        TitledPane titlePane = new TitledPane();
-        titlePane.setCollapsible(false);
-        titlePane.textProperty().bind(state.selectedModelDefinitionProperty().asString());
-        titlePane.setContent(box);
-        setFontWeight(titlePane, FontWeight.BOLD);
-        return titlePane;
-    }
-
-    private void updateModelSelectionType(JMadModelSelectionType type) {
-
+        SectionPane sectionPane = new SectionPane();
+        sectionPane.textProperty().bind(state.selectedModelDefinitionProperty().asString());
+        sectionPane.setContent(box);
+        return sectionPane;
     }
 
 }
