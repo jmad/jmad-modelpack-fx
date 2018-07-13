@@ -35,7 +35,7 @@ buildscript {
             maven { url "http://repo.spring.io/plugins-release" }
         }
     }
-    dependencies { classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0' }
+    dependencies { classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4' }
 }
 
 apply plugin: 'java'
