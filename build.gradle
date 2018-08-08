@@ -65,7 +65,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'jmad', name: 'jmad-modelpack-service', version: '0.2.6'
+    compile group: 'jmad', name: 'jmad-modelpack-service', version: '0.2.7'
     compile group: 'com.google.guava', name: 'guava', version: '19.0'
 
     if(JavaVersion.current() <= JavaVersion.VERSION_1_8){

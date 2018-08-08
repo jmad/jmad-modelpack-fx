@@ -4,6 +4,15 @@
 
 package org.jmad.modelpack.gui.domain;
 
+import static freetimelabs.io.reactorfx.schedulers.FxSchedulers.fxThread;
+import static javafx.collections.FXCollections.observableArrayList;
+import static org.jmad.modelpack.gui.util.FxUtils.onChange;
+import static org.jmad.modelpack.service.JMadModelPackageService.Mode.OFFLINE;
+import static org.jmad.modelpack.service.JMadModelPackageService.Mode.ONLINE;
+
+import org.jmad.modelpack.domain.ModelPackageVariant;
+import org.jmad.modelpack.service.JMadModelPackageService;
+
 import cern.accsoft.steering.jmad.domain.machine.RangeDefinition;
 import cern.accsoft.steering.jmad.domain.machine.SequenceDefinition;
 import cern.accsoft.steering.jmad.modeldefs.domain.JMadModelDefinition;
@@ -14,14 +23,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import org.jmad.modelpack.domain.ModelPackageVariant;
-import org.jmad.modelpack.service.JMadModelPackageService;
-
-import static freetimelabs.io.reactorfx.schedulers.FxSchedulers.fxThread;
-import static javafx.collections.FXCollections.observableArrayList;
-import static org.jmad.modelpack.gui.util.FxUtils.onChange;
-import static org.jmad.modelpack.service.JMadModelPackageService.Mode.OFFLINE;
-import static org.jmad.modelpack.service.JMadModelPackageService.Mode.ONLINE;
 
 public class ModelPackSelectionState {
 
@@ -68,6 +69,7 @@ public class ModelPackSelectionState {
         onlineMode.addListener(onChange(isOnline -> modelPackageService.setMode(isOnline ? ONLINE : OFFLINE)));
         
         selectedModelDefinition.addListener(onChange(this::updateSelectedModelDefinition));
+        selectedSequence.addListener(onChange(this::updateSequenceDefinition));
     }
 
     private void updateSelectedModelDefinition(JMadModelDefinition selectedModelDef) {

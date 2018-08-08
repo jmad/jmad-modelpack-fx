@@ -67,7 +67,7 @@ public class JMadModelPackagesSelectionControl extends AnchorPane {
     public JMadModelPackagesSelectionControl(JMadModelPackageService packageService, ModelPackSelectionState state) {
         this.packageService = requireNonNull(packageService, "packageService must not be null");
         this.state = requireNonNull(state, "modelpack selection state must not be null");
-        map = TreeMultimap.create(comparing(ModelPackage::name), ModelPackages.packageVariantComparator());
+        map = TreeMultimap.create(comparing(ModelPackage::name), ModelPackages.latestFirstPackageVariantComparator());
         filterControl = new VariantTypeFilterControl();
         packagesTableRoot = new TreeItem<>(new PackageLine());
 
