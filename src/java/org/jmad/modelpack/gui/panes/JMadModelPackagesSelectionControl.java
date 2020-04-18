@@ -223,7 +223,7 @@ public class JMadModelPackagesSelectionControl extends AnchorPane {
         }
 
         private static String stringFor(Variant variant) {
-            return variant.name() + " [" + variant.type().serializedName() + "]";
+            return variant.name() + " [" + variant.type() + "]";
         }
 
         private PackageLine() {
