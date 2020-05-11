@@ -5,7 +5,6 @@
 package org.jmad.modelpack.gui.conf;
 
 import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.jmad.modelpack.gui.dialogs.JMadModelSelectionDialog;
