@@ -3,7 +3,7 @@ buildscript {
     project.ext.DEPLOYMENT = System.getProperty('deployment') ?: false
     project.ext.VCS_TAG = System.getProperty('TRAVIS_TAG') ?: System.getenv('TRAVIS_TAG')
     project.ext.POM = [
-            groupId    : 'jmad',
+            groupId    : 'io.jmad',
             artifactId : 'jmad-modelpack-fx',
             description: 'JavaFx GUI components for accessing the JMad model package service.'
     ]
