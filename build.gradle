@@ -64,7 +64,7 @@ repositories {
         maven { url 'http://artifactory.cern.ch/development' }
     } else {
         mavenCentral()
-        maven { url "https://dl.bintray.com/jmad/jmad-repo" }
+        jcenter()
     }
 }
 
